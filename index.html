@@ -1,71 +1,92 @@
 <html>
     <head>
         <!-- Global site tag (gtag.js) - Google Analytics -->
-        <script async src="https://www.googletagmanager.com/gtag/js?id=G-XKYX2JFZ5S"></script>
+        <script
+            async
+            src="https://www.googletagmanager.com/gtag/js?id=G-XKYX2JFZ5S"
+        ></script>
         <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag(){dataLayer.push(arguments);}
-        gtag('js', new Date());
+            window.dataLayer = window.dataLayer || [];
+            function gtag() {
+                dataLayer.push(arguments);
+            }
+            gtag("js", new Date());
 
-        gtag('config', 'G-XKYX2JFZ5S');
+            gtag("config", "G-XKYX2JFZ5S");
         </script>
         <script>
-            document.addEventListener('DOMContentLoaded',function(event){
-            // array with texts to type in typewriter
-            var dataText = [ "websites.", "build tools.", "cloud infrastructure.","machine learning models.", "anything."];
-            
-            // type one text in the typwriter
-            // keeps calling itself until the text is finished
-            function typeWriter(text, i, fnCallback) {
-                // chekc if text isn't finished yet
-                if (i < (text.length)) {
-                // add next character to h1
-                document.querySelector("#typing").innerHTML = text.substring(0, i+1) +'<span aria-hidden="true"></span>';
-
-                // wait for a while and call this function again for next character
-                setTimeout(function() {
-                    typeWriter(text, i + 1, fnCallback)
-                }, 100);
+            document.addEventListener("DOMContentLoaded", function (event) {
+                // array with texts to type in typewriter
+                var txt = [
+                    "wrote software at Slack.",
+                    "sometimes like running. ",
+                    "eat too many pop tarts. ",
+                    "have a Google Maps addiction. ",
+                ];
+                function typechar(c) {
+                    document.querySelector("#typing").innerHTML += c;
                 }
-                // text finished, call callback if there is a callback function
-                else if (typeof fnCallback == 'function') {
-                // call callback after timeout
-                setTimeout(fnCallback, 1200);
+                function deletechar() {
+                    document.querySelector("#typing").innerHTML = document
+                        .querySelector("#typing")
+                        .innerHTML.slice(0, -1);
                 }
-            }
-            // start a typewriter animation for a text in the dataText array
-            function StartTextAnimation(i) {
-                if (typeof dataText[i] == 'undefined'){
-                    setTimeout(function() {
-                    StartTextAnimation(0);
-                    }, 22000);
+                function step(i) {
+                    let count =
+                        i % (txt.reduce((acc, str) => acc + str.length, 0) * 2);
+                    if (count == 0) {
+                        deletechar();
+                    }
+                    for (const str of txt) {
+                        for (const chr of str) {
+                            if (count == 0) {
+                                typechar(chr);
+                                setTimeout(function () {
+                                    step(i + 1);
+                                }, 100);
+                                return;
+                            }
+                            count--;
+                        }
+                        if (count == 0) {
+                            setTimeout(function () {
+                                step(i + 1);
+                            }, 2200);
+                            return;
+                        }
+                        for (const chr of str) {
+                            if (count == 0) {
+                                deletechar();
+                                setTimeout(function () {
+                                    step(i + 1);
+                                }, 100);
+                                return;
+                            }
+                            count--;
+                        }
+                        if (count == 0) {
+                            deletechar();
+                        }
+                    }
                 }
-                // check if dataText[i] exists
-                if (i < dataText[i].length) {
-                // text exists! start typewriter animation
-                typeWriter(dataText[i], 0, function(){
-                // after callback (and whole text has been animated), start next text
-                StartTextAnimation(i + 1);
-                });
-                }
-            }
-            // start the text animation
-            StartTextAnimation(0);
+                step(0);
             });
         </script>
         <style>
-            @import url('https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700;1,900&family=Nunito+Sans:ital,wght@0,200;0,300;0,400;0,600;0,700;0,800;0,900;1,200;1,300;1,400;1,600;1,700;1,800;1,900&display=swap');
-            :root{
-                --primary-font: 'Nunito Sans','Segoe UI', Tahoma, Verdana, sans-serif;
-                --secondary-font: 'Merriweather', Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+            @import url("https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700;1,900&family=Nunito+Sans:ital,wght@0,200;0,300;0,400;0,600;0,700;0,800;0,900;1,200;1,300;1,400;1,600;1,700;1,800;1,900&display=swap");
+            :root {
+                --primary-font: "Nunito Sans", "Segoe UI", Tahoma, Verdana,
+                    sans-serif;
+                --secondary-font: "Merriweather", Cambria, Cochin, Georgia,
+                    Times, "Times New Roman", serif;
             }
-            body{
+            body {
                 padding: 0px;
                 margin: 0px;
                 font-family: var(--primary-font);
                 overflow-x: hidden;
             }
-            .name-header-container{
+            .name-header-container {
                 padding: 30px 0px 0px 30px;
                 font-weight: 700;
                 font-size: 24px;
@@ -73,17 +94,18 @@
                 position: fixed;
                 top: 0px;
                 left: 0px;
-                animation: name-header-anim 1s cubic-bezier(0.165, 0.84, 0.44, 1);
+                animation: name-header-anim 1s
+                    cubic-bezier(0.165, 0.84, 0.44, 1);
             }
-            @keyframes name-header-anim{
-                from{
+            @keyframes name-header-anim {
+                from {
                     left: -100px;
                 }
-                to{
+                to {
                     left: 0px;
                 }
             }
-            span {
+            #typing {
                 border-right: 4px solid orange;
                 animation: caret 1s steps(1) infinite;
             }
@@ -93,7 +115,7 @@
                     border-color: transparent;
                 }
             }
-            .show-on-hover{
+            .show-on-hover {
                 opacity: 0;
                 width: 100%;
                 height: 100%;
@@ -107,10 +129,10 @@
                 font-weight: 700;
                 font-size: 30px;
             }
-            a:hover .show-on-hover{
+            a:hover .show-on-hover {
                 opacity: 1;
             }
-            .email-link{
+            .email-link {
                 color: white;
                 margin: 0px 10px 0px 10px;
                 text-decoration: none;
@@ -125,81 +147,363 @@
                 top: -2px;
                 left: 2px;
             }
-            .email-link:hover{
+            .email-link:hover {
                 box-shadow: none;
                 top: 2px;
                 left: -2px;
             }
+            .resume-section {
+                max-width: 570px;
+                padding: 45px;
+            }
         </style>
     </head>
     <body>
-        <a href="#" style="color: black; text-decoration: none;"class="name-header-container">
-            Carson<br>
+        <a
+            href="#"
+            style="color: black; text-decoration: none"
+            class="name-header-container"
+        >
+            Carson<br />
             Cummins
         </a>
-        <div style="width: 100vw; height: 100vh;">
-            <div style="display: flex; align-items: center; padding-left: 14vw; height: 100vh;">
+        <div style="width: 100vw; height: 100vh">
+            <div
+                style="
+                    display: flex;
+                    align-items: center;
+                    padding-left: 14vw;
+                    height: 100vh;
+                "
+            >
                 <div>
-                    <div style="color: #b0b0b0; font-size: 14px; font-family: var(--secondary-font);">Hi there. I'm</div>
-                    <div style="font-size: 50px; font-weight: 700;">Carson Cummins.</div>
-                    <div style="font-size: 50px; font-weight: 700; display: flex; gap: 10px; white-space: nowrap;">
-                        I make
+                    <div
+                        style="
+                            color: #b0b0b0;
+                            font-size: 14px;
+                            font-family: var(--secondary-font);
+                        "
+                    >
+                        Hi there. I'm
+                    </div>
+                    <div style="font-size: 50px; font-weight: 700">
+                        Carson Cummins.
+                    </div>
+                    <div
+                        style="
+                            font-size: 50px;
+                            font-weight: 700;
+                            display: flex;
+                            gap: 10px;
+                            white-space: nowrap;
+                        "
+                    >
+                        I
                         <div id="typing"></div>
                     </div>
                 </div>
             </div>
         </div>
-        <div style="width: 100vw; display:flex; justify-content: center; position: relative; top: -30px; color:#b0b0b0; gap: 10px;">
-            <div style="font-family: var(--secondary-font);">
-                Have a look around
+        <div
+            style="
+                width: 100vw;
+                display: flex;
+                justify-content: center;
+                position: relative;
+                top: -30px;
+                color: #b0b0b0;
+                gap: 10px;
+            "
+        >
+            <div style="font-family: var(--secondary-font)">
+                Stuff I've made
             </div>
-            <svg width="24" height="24" stroke-width="1.5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M19 13.5L15.5 17L12 13.5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
-                <path d="M15.5 17V11C15.5 8.79086 13.7091 7 11.5 7H4.5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>           
+            <svg
+                width="24"
+                height="24"
+                stroke-width="1.5"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+            >
+                <path
+                    d="M19 13.5L15.5 17L12 13.5"
+                    stroke="currentColor"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                />
+                <path
+                    d="M15.5 17V11C15.5 8.79086 13.7091 7 11.5 7H4.5"
+                    stroke="currentColor"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                />
+            </svg>
         </div>
-        <div style="width: 100%; display: flex; gap: 50px; justify-content: center; flex-wrap: wrap;">
-            <a href="https://joinaura.io" style="background-image: url('aura-3.png'); background-position: center center; background-size: cover; width: 600px; height: 369px; display: block; text-decoration: none; color: white">
-                <div class="show-on-hover" style="color: black; text-decoration: none;">
-                    <img style="width:150px"src="logo.svg">
-                    <div style="font-size: 12px; max-width: 230px; margin-top: 15px;">
-                        AURA is the easiest way to find research opportunities at universities across the country.
+        <div
+            style="
+                width: 100%;
+                display: flex;
+                gap: 50px;
+                justify-content: center;
+                flex-wrap: wrap;
+            "
+        >
+            <a
+                href="https://joinaura.io"
+                style="
+                    background-image: url('aura-3.png');
+                    background-position: center center;
+                    background-size: cover;
+                    width: 600px;
+                    height: 369px;
+                    display: block;
+                    text-decoration: none;
+                    color: white;
+                "
+            >
+                <div
+                    class="show-on-hover"
+                    style="color: black; text-decoration: none"
+                >
+                    <img style="width: 150px" src="logo.svg" />
+                    <div
+                        style="
+                            font-size: 12px;
+                            max-width: 230px;
+                            margin-top: 15px;
+                        "
+                    >
+                        AURA is the easiest way to find research opportunities
+                        at universities across the country.
                     </div>
                 </div>
             </a>
-            <a href="aejpg.pdf" style="background-image: url('aejpg.png'); background-position: center center; background-size: cover; width: 600px; height: 369px; display: block; text-decoration: none; color: white">
-                <div class="show-on-hover" style="color: black; text-decoration: none;">
-                    <div>
-                        .aejpg
-                    </div>
+            <a
+                href="aejpg.pdf"
+                style="
+                    background-image: url('aejpg.png');
+                    background-position: center center;
+                    background-size: cover;
+                    width: 600px;
+                    height: 369px;
+                    display: block;
+                    text-decoration: none;
+                    color: white;
+                "
+            >
+                <div
+                    class="show-on-hover"
+                    style="color: black; text-decoration: none"
+                >
+                    <div>.aejpg</div>
                     <div style="font-size: 12px; max-width: 200px">
-                        This paper describes an algorithm I wrote for reducing the size of jpg images using an autoencoding neural network.
+                        This paper describes an algorithm I wrote for reducing
+                        the size of jpg images using an autoencoding neural
+                        network.
                     </div>
                 </div>
             </a>
-            <a href="https://www.strava.com/activities/5987789025" style="background-image: url('strava.png'); background-position: center center; background-size: cover; width: 600px; height: 369px; display: block; text-decoration: none; color: white">
-                <div class="show-on-hover" style="color: black; text-decoration: none;">
-                    <div>
-                        50 Miles
-                    </div>
+            <a
+                href="https://www.strava.com/activities/5987789025"
+                style="
+                    background-image: url('strava.png');
+                    background-position: center center;
+                    background-size: cover;
+                    width: 600px;
+                    height: 369px;
+                    display: block;
+                    text-decoration: none;
+                    color: white;
+                "
+            >
+                <div
+                    class="show-on-hover"
+                    style="color: black; text-decoration: none"
+                >
+                    <div>50 Miles</div>
                     <div style="font-size: 12px; max-width: 200px">
-                        I run quite a bit, and sometimes I run really far. Check out one of those times - a 50 mile run right from my dorm door.
+                        I run quite a bit, and sometimes I run really far. Check
+                        out one of those times - a 50 mile run right from my
+                        dorm door.
                     </div>
                 </div>
             </a>
-            <a href="https://containerfactory.xyz" style="background-image: url('containerfactory.png'); background-position: center center; background-size: cover; width: 600px; height: 369px; display: block; text-decoration: none; color: white">
-                <div class="show-on-hover" style="color: black; text-decoration: none;">
-                    <div>
-                        containerfactory.xyz
-                    </div>
+            <a
+                href="https://containerfactory.xyz"
+                style="
+                    background-image: url('containerfactory.png');
+                    background-position: center center;
+                    background-size: cover;
+                    width: 600px;
+                    height: 369px;
+                    display: block;
+                    text-decoration: none;
+                    color: white;
+                "
+            >
+                <div
+                    class="show-on-hover"
+                    style="color: black; text-decoration: none"
+                >
+                    <div>containerfactory.xyz</div>
                     <div style="font-size: 12px; max-width: 200px">
-                        A nocode dockerfile generation tool that simplifies getting started with docker.
+                        A nocode dockerfile generation tool that simplifies
+                        getting started with docker.
                     </div>
                 </div>
             </a>
         </div>
-        <div style="min-height: 200px; width: 100%; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: 600;">
-            Send over an <a href="mailto:carson.cummins11@gmail.com" class = "email-link">email</a> if you want to chat!
+        <div
+            style="
+                width: calc(100% - 180px);
+                margin: 90px;
+                font-family: var(--primary-font);
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                gap: 40px;
+            "
+        >
+            <div
+                style="
+                    width: 100vw;
+                    display: flex;
+                    justify-content: center;
+                    position: relative;
+                    margin-top: 30px;
+                    color: #b0b0b0;
+                    gap: 10px;
+                "
+            >
+                <div style="font-family: var(--secondary-font)">
+                    Jobs I've had
+                </div>
+                <svg
+                    width="24"
+                    height="24"
+                    stroke-width="1.5"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                >
+                    <path
+                        d="M19 13.5L15.5 17L12 13.5"
+                        stroke="currentColor"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                    />
+                    <path
+                        d="M15.5 17V11C15.5 8.79086 13.7091 7 11.5 7H4.5"
+                        stroke="currentColor"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                    />
+                </svg>
+            </div>
+
+            <div class="resume-section">
+                <div style="display: flex; gap: 15px; align-items: center">
+                    <img src="quip.svg" style="width: 150px" />
+                    <div
+                        style="
+                            color: #b0b0b0;
+                            font-size: 14px;
+                            font-family: var(--secondary-font);
+                        "
+                    >
+                        Data platform software engineering intern
+                    </div>
+                </div>
+                <div
+                    style="
+                        color: #b0b0b0;
+                        font-size: 14px;
+                        font-family: var(--secondary-font);
+                        margin-top: 25px;
+                    "
+                >
+                    Created data pipeline visualization to track job status and
+                    pipeline health in real time. Developed tooling to track
+                    migrations of EKM data across Quip and Slack's cloud
+                    environment. Built an internal data location webpage to
+                    improve the debugging experience for IDR compliance.
+                </div>
+            </div>
+            <div class="resume-section">
+                <div style="display: flex; gap: 15px; align-items: center">
+                    <img src="slack.svg" style="width: 150px" />
+                    <div
+                        style="
+                            color: #b0b0b0;
+                            font-size: 14px;
+                            font-family: var(--secondary-font);
+                        "
+                    >
+                        Security team software engineering intern
+                    </div>
+                </div>
+                <div
+                    style="
+                        color: #b0b0b0;
+                        font-size: 14px;
+                        font-family: var(--secondary-font);
+                        margin-top: 25px;
+                    "
+                >
+                    Delivered automated role request system that integrated
+                    directly with existing internal RBAC procedures. Worked
+                    extensively with Python, Go, Kubernetes while gaining
+                    insight into access governance systems at scale.
+                </div>
+            </div>
+            <div class="resume-section">
+                <div style="display: flex; gap: 15px; align-items: flex-end">
+                    <img src="rs.png" style="width: 250px" />
+                    <div
+                        style="
+                            color: #b0b0b0;
+                            font-size: 14px;
+                            font-family: var(--secondary-font);
+                        "
+                    >
+                        Software engineering intern
+                    </div>
+                </div>
+                <div
+                    style="
+                        color: #b0b0b0;
+                        font-size: 14px;
+                        font-family: var(--secondary-font);
+                        margin-top: 25px;
+                    "
+                >
+                    Created a suite of tools to serialize a running Windows
+                    Jenkins server and replicate the server within a Docker
+                    container. Extensive work using Windows Batch scripting and
+                    Python. Analyzed both source code and decompiled binaries to
+                    determine proper Docker configuration for proper function of
+                    a complex build system with several unmaintained aspects.
+                </div>
+            </div>
+        </div>
+        <div
+            style="
+                min-height: 200px;
+                width: 100%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 24px;
+                font-weight: 600;
+            "
+        >
+            Send over an
+            <a href="mailto:carson.cummins11@gmail.com" class="email-link"
+                >email</a
+            >
+            if you want to chat!
         </div>
     </body>
 </html>
