@@ -18,18 +18,34 @@
             document.addEventListener("DOMContentLoaded", function (event) {
                 // array with texts to type in typewriter
                 var txt = [
-                    "wrote software at Slack.",
-                    "sometimes like running. ",
-                    "eat too many pop tarts. ",
-                    "have a Google Maps addiction. ",
+                    "I wrote software at Slack.",
+                    "I sometimes like running. ",
+                    "I eat too many pop tarts. ",
+                    "I have a Google Maps addiction. ",
+                    "I can ride a unicycle.",
+                    "I am learning web assembly",
+                    "I like hanging out with dogs",
                 ];
                 function typechar(c) {
-                    document.querySelector("#typing").innerHTML += c;
+                    document.querySelector("#typing").innerHTML =
+                        document
+                            .querySelector("#typing")
+                            .innerHTML.replace(
+                                '<span class="caret"></span>',
+                                ""
+                            ) +
+                        c +
+                        '<span class="caret"></span>';
                 }
                 function deletechar() {
-                    document.querySelector("#typing").innerHTML = document
-                        .querySelector("#typing")
-                        .innerHTML.slice(0, -1);
+                    document.querySelector("#typing").innerHTML =
+                        document
+                            .querySelector("#typing")
+                            .innerHTML.replace(
+                                '<span class="caret"></span>',
+                                ""
+                            )
+                            .slice(0, -1) + '<span class="caret"></span>';
                 }
                 function step(i) {
                     let count =
@@ -105,9 +121,11 @@
                     left: 0px;
                 }
             }
-            #typing {
+            .caret {
                 border-right: 4px solid orange;
                 animation: caret 1s steps(1) infinite;
+                min-height: 68px;
+                max-height: 68px;
             }
 
             @keyframes caret {
@@ -195,10 +213,8 @@
                             font-weight: 700;
                             display: flex;
                             gap: 10px;
-                            white-space: nowrap;
                         "
                     >
-                        I
                         <div id="typing"></div>
                     </div>
                 </div>
