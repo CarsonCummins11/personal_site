@@ -102,6 +102,81 @@
                 font-family: var(--primary-font);
                 overflow-x: hidden;
             }
+            .gradient-box-red {
+                margin: auto;
+                position: relative;
+                box-sizing: border-box;
+                background: #fff;
+                background-clip: padding-box; /* !importanté */
+                border: solid 3px transparent; /* !importanté */
+
+                &:before {
+                    content: "";
+                    position: absolute;
+                    top: 0;
+                    right: 0;
+                    bottom: 0;
+                    left: 0;
+                    z-index: -1;
+                    margin: -3px; /* !importanté */
+                    border-radius: inherit; /* !importanté */
+                    background: linear-gradient(
+                        to right,
+                        rgba(255, 0, 0, 0.5),
+                        rgba(255, 166, 0, 0.5)
+                    );
+                }
+            }
+            .gradient-box-blue {
+                margin: auto;
+                position: relative;
+                box-sizing: border-box;
+                background: #fff;
+                background-clip: padding-box; /* !importanté */
+                border: solid 3px transparent; /* !importanté */
+
+                &:before {
+                    content: "";
+                    position: absolute;
+                    top: 0;
+                    right: 0;
+                    bottom: 0;
+                    left: 0;
+                    z-index: -1;
+                    margin: -3px; /* !importanté */
+                    border-radius: inherit; /* !importanté */
+                    background: linear-gradient(
+                        to right,
+                        rgb(233, 109, 255, 0.5),
+                        rgb(0, 179, 255, 0.5)
+                    );
+                }
+            }
+            .gradient-box-green {
+                margin: auto;
+                position: relative;
+                box-sizing: border-box;
+                background: #fff;
+                background-clip: padding-box; /* !importanté */
+                border: solid 3px transparent; /* !importanté */
+
+                &:before {
+                    content: "";
+                    position: absolute;
+                    top: 0;
+                    right: 0;
+                    bottom: 0;
+                    left: 0;
+                    z-index: -1;
+                    margin: -3px; /* !importanté */
+                    border-radius: inherit; /* !importanté */
+                    background: linear-gradient(
+                        to right,
+                        rgb(11, 223, 96, 0.5),
+                        rgb(255, 217, 0, 0.5)
+                    );
+                }
+            }
             .name-header-container {
                 padding: 30px 0px 0px 30px;
                 font-weight: 700;
@@ -171,11 +246,27 @@
                 left: -2px;
             }
             .resume-section {
-                max-width: 570px;
-                padding: 60px;
-                box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
-                border-radius: 8px;
+                max-width: 850px;
+                padding: 100px;
+                border-radius: 12px;
                 font-family: var(--primary-font);
+            }
+            .unique-link {
+                color: #b0b0b0;
+                font-family: var(--secondary-font);
+                text-decoration: none;
+                display: flex;
+                gap: 10px;
+                align-items: center;
+                transition: 0.3s;
+                margin-top: 12px;
+            }
+            .unique-link:hover {
+                gap: 40px;
+            }
+            #unique {
+                margin-top: 50px;
+                margin-bottom: 50px;
             }
         </style>
     </head>
@@ -219,6 +310,28 @@
                         "
                     >
                         <div id="typing"></div>
+                    </div>
+                    <div>
+                        <a href="#readme" class="unique-link">
+                            <div>readme</div>
+                            <?xml version="1.0" encoding="UTF-8"?><svg
+                                width="24px"
+                                height="24px"
+                                stroke-width="1.5"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                xmlns="http://www.w3.org/2000/svg"
+                                color="#b0b0b0"
+                            >
+                                <path
+                                    d="M8 12h8m0 0l-3.5-3.5M16 12l-3.5 3.5M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"
+                                    stroke="#b0b0b0"
+                                    stroke-width="1.5"
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                ></path>
+                            </svg>
+                        </a>
                     </div>
                 </div>
             </div>
@@ -426,70 +539,66 @@
         </div>
         <div
             style="
+                width: 100vw;
+                display: flex;
+                justify-content: center;
+                position: relative;
+                margin-top: 300px;
+                color: #b0b0b0;
+                gap: 10px;
+            "
+        >
+            <div style="font-family: var(--secondary-font)">Jobs I've had</div>
+            <svg
+                width="24"
+                height="24"
+                stroke-width="1.5"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+            >
+                <path
+                    d="M19 13.5L15.5 17L12 13.5"
+                    stroke="currentColor"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                />
+                <path
+                    d="M15.5 17V11C15.5 8.79086 13.7091 7 11.5 7H4.5"
+                    stroke="currentColor"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                />
+            </svg>
+        </div>
+        <div
+            style="
                 width: calc(100% - 180px);
                 margin: 90px;
+                margin-top: 30px;
                 font-family: var(--primary-font);
                 display: flex;
                 flex-direction: column;
                 align-items: center;
                 justify-content: center;
-                gap: 40px;
+                gap: 80px;
             "
         >
-            <div
-                style="
-                    width: 100vw;
-                    display: flex;
-                    justify-content: center;
-                    position: relative;
-                    margin-top: 30px;
-                    color: #b0b0b0;
-                    gap: 10px;
-                "
-            >
-                <div style="font-family: var(--secondary-font)">
-                    Jobs I've had
-                </div>
-                <svg
-                    width="24"
-                    height="24"
-                    stroke-width="1.5"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                >
-                    <path
-                        d="M19 13.5L15.5 17L12 13.5"
-                        stroke="currentColor"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                    />
-                    <path
-                        d="M15.5 17V11C15.5 8.79086 13.7091 7 11.5 7H4.5"
-                        stroke="currentColor"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                    />
-                </svg>
-            </div>
-
-            <div class="resume-section">
-                <div style="display: flex; gap: 15px; align-items: center">
-                    <img src="quip.svg" style="width: 150px" />
+            <div class="resume-section gradient-box-red">
+                <div style="display: flex; gap: 15px; flex-direction: column">
+                    <img src="quip.svg" style="width: 100px" />
                     <div
                         style="
-                            color: #000000;
+                            color: #b0b0b0;
                             font-size: 14px;
                             font-weight: 600;
                             font-family: var(--primary-font);
-                            margin-right: 0px;
-                            margin-left: auto;
                         "
                     >
                         Data platform software engineering intern
                     </div>
                 </div>
-                <div style="color: #b0b0b0; font-size: 16px; margin-top: 35px">
+                <div style="color: #b0b0b0; font-size: 18px; margin-top: 15px">
                     Created data pipeline visualization to track job status and
                     pipeline health in real time. Developed tooling to track
                     migrations of EKM data across Quip and Slack's cloud
@@ -497,50 +606,118 @@
                     improve the debugging experience for IDR compliance.
                 </div>
             </div>
-            <div class="resume-section">
-                <div style="display: flex; gap: 15px; align-items: center">
-                    <img src="slack.svg" style="width: 150px" />
+            <div class="resume-section gradient-box-blue">
+                <div style="display: flex; gap: 15px; flex-direction: column">
+                    <img src="slack.svg" style="width: 120px" />
                     <div
                         style="
-                            color: #000000;
+                            color: #b0b0b0;
                             font-size: 14px;
                             font-weight: 600;
-                            margin-right: 0px;
-                            margin-left: auto;
                         "
                     >
                         Security software engineering intern
                     </div>
                 </div>
-                <div style="color: #b0b0b0; font-size: 16px; margin-top: 35px">
+                <div style="color: #b0b0b0; font-size: 18px; margin-top: 15px">
                     Delivered automated role request system that integrated
                     directly with existing internal RBAC procedures. Worked
                     extensively with Python, Go, Kubernetes while gaining
                     insight into access governance systems at scale.
                 </div>
             </div>
-            <div class="resume-section">
-                <div style="display: flex; gap: 15px; align-items: flex-end">
-                    <img src="rs.png" style="width: 250px" />
+            <div class="resume-section gradient-box-green">
+                <div style="display: flex; gap: 15px; flex-direction: column">
+                    <img src="rs.png" style="width: 190px" />
                     <div
                         style="
-                            color: #000000;
+                            color: #b0b0b0;
                             font-size: 14px;
                             font-weight: 600;
-                            margin-right: 0px;
-                            margin-left: auto;
                         "
                     >
                         Software engineering intern
                     </div>
                 </div>
-                <div style="color: #b0b0b0; font-size: 16px; margin-top: 35px">
+                <div style="color: #b0b0b0; font-size: 18px; margin-top: 15px">
                     Created a suite of tools to serialize a running Windows
                     Jenkins server and replicate the server within a Docker
                     container. Extensive work using Windows Batch scripting and
                     Python. Analyzed both source code and decompiled binaries to
                     determine proper Docker configuration for proper function of
                     a complex build system with several unmaintained aspects.
+                </div>
+            </div>
+        </div>
+        <div
+            style="
+                width: 100%;
+                padding-bottom: 40px;
+                align-items: center;
+                justify-content: center;
+                display: flex;
+                font-family: var(--secondary-font);
+                color: #b0b0b0;
+            "
+        >
+            <div id="readme" style="margin: 100px 0px 100px 0px">
+                <div
+                    style="
+                        width: 100%;
+                        display: flex;
+                        justify-content: center;
+                        color: #b0b0b0;
+                        gap: 10px;
+                    "
+                >
+                    <div style="font-family: var(--secondary-font)">readme</div>
+                    <svg
+                        width="24"
+                        height="24"
+                        stroke-width="1.5"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                    >
+                        <path
+                            d="M19 13.5L15.5 17L12 13.5"
+                            stroke="currentColor"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                        />
+                        <path
+                            d="M15.5 17V11C15.5 8.79086 13.7091 7 11.5 7H4.5"
+                            stroke="currentColor"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                        />
+                    </svg>
+                </div>
+                <div style="display: flex; justify-content: center">
+                    <div
+                        style="
+                            max-width: 600px;
+                            margin-top: 25px;
+                            line-height: 35px;
+                        "
+                    >
+                        <span style="font-size: 24px; margin-right: 10px"
+                            >👋</span
+                        >
+                        I'm Carson, a software developer from Oregon finishing
+                        up my senior year at the University of Rochester. I'm
+                        really interested in solving hard, high impact problems
+                        that improve people's lives. Throughout college, I built
+                        <a style="color: #8a8a8a" href="https://joinaura.io"
+                            >AURA</a
+                        >, which has helped connect hundreds of different
+                        students with research, and is still helping out
+                        students today. Right now, I'm working on
+                        <a style="color: #8a8a8a" href="https://beta.texly.io"
+                            >Texly</a
+                        >, a service that lets you organize your life with
+                        scheduled notifications.
+                    </div>
                 </div>
             </div>
         </div>
