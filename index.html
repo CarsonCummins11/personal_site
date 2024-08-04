@@ -185,6 +185,9 @@
                 left: 0px;
                 animation: name-header-anim 1s
                     cubic-bezier(0.165, 0.84, 0.44, 1);
+                display: flex;
+                align-items: center;
+                gap: 10px;
             }
             @keyframes name-header-anim {
                 from {
@@ -275,8 +278,11 @@
             style="color: black; text-decoration: none"
             class="name-header-container"
         >
-            Carson<br />
-            Cummins
+            <img src="ico.png" width="50">
+            <div>
+                Carson<br />
+                Cummins
+            </div>
         </a>
         <div style="width: 100vw; height: 100vh">
             <div
