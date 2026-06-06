@@ -1,28 +1,70 @@
 <html>
     <head>
-        <!-- Global site tag (gtag.js) - Google Analytics -->
-        <script
-            async
-            src="https://www.googletagmanager.com/gtag/js?id=G-XKYX2JFZ5S"
-        ></script>
+        <head>
+            <meta charset="UTF-8" />
+            <title>Carson Cummins</title>
+        </head>
         <script>
-            window.dataLayer = window.dataLayer || [];
-            function gtag() {
-                dataLayer.push(arguments);
-            }
-            gtag("js", new Date());
+            function set_panel(panel_name) {
+                if (panel_name == "adventure") {
+                    document.querySelector("#adventure-div").hidden = false;
+                    document.querySelector("#professional-div").hidden = true;
+                    document.querySelector(
+                        "#adventure-panel-choose",
+                    ).style.backgroundColor = "orange";
+                    document.querySelector(
+                        "#professional-panel-choose",
+                    ).style.backgroundColor = "#b0b0b0";
+                } else {
+                    document.querySelector("#adventure-div").hidden = true;
+                    document.querySelector("#professional-div").hidden = false;
+                    document.querySelector(
+                        "#professional-panel-choose",
+                    ).style.backgroundColor = "orange";
+                    document.querySelector(
+                        "#adventure-panel-choose",
+                    ).style.backgroundColor = "#b0b0b0";
+                }
 
-            gtag("config", "G-XKYX2JFZ5S");
-        </script>
-        <script>
+                window.history.pushState(
+                    { page: 1 },
+                    panel_name,
+                    window.location.href.split("#")[0] + "#" + panel_name,
+                );
+            }
+            function makeHTMLForBlogLink(info) {
+                return `<a class="blog-post-link" href="blog_posts/${info.folder}/post.html">
+                    <div class="post-meta">
+                        <span class="post-date">${info.published_date}</span>
+                        <span class="post-title">${info.title}</span>
+                    </div>
+                    <svg class="post-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </a>`;
+            }
             document.addEventListener("DOMContentLoaded", function (event) {
-                // array with texts to type in typewriter
+                fetch("blog_metadata.json").then((response) => {
+                    let innerHTML = "";
+                    response.json().then((data) => {
+                        data.forEach((post) => {
+                            innerHTML += makeHTMLForBlogLink(post);
+                        });
+                        document.querySelector("#blog-links").innerHTML =
+                            innerHTML;
+                    });
+                });
+                const panel_value =
+                    window.location.hash.substring(1) || "adventure";
+                set_panel(panel_value);
                 var txt = [
                     "I spend too much time on my computer.",
-                    "I have a Google Maps obsession.",
+                    "I'm obsessed with weird outdoor adventures.",
                     "I can ride a unicycle.",
-                    "I eat too many pop tarts. ",
+                    "I eat too many pop tarts.",
                     "I like hanging out with dogs.",
+                    "You're still reading this?",
+                    "I'm from Portland",
                 ];
                 function typechar(c) {
                     document.querySelector("#typing").innerHTML =
@@ -30,7 +72,7 @@
                             .querySelector("#typing")
                             .innerHTML.replace(
                                 '<span class="caret"></span>',
-                                ""
+                                "",
                             ) +
                         c +
                         '<span class="caret"></span>';
@@ -41,7 +83,7 @@
                             .querySelector("#typing")
                             .innerHTML.replace(
                                 '<span class="caret"></span>',
-                                ""
+                                "",
                             )
                             .slice(0, -1) + '<span class="caret"></span>';
                 }
@@ -89,10 +131,11 @@
         <style>
             @import url("https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700;1,900&family=Nunito+Sans:ital,wght@0,200;0,300;0,400;0,600;0,700;0,800;0,900;1,200;1,300;1,400;1,600;1,700;1,800;1,900&display=swap");
             :root {
-                --primary-font: "Nunito Sans", "Segoe UI", Tahoma, Verdana,
-                    sans-serif;
-                --secondary-font: "Merriweather", Cambria, Cochin, Georgia,
-                    Times, "Times New Roman", serif;
+                --primary-font:
+                    "Nunito Sans", "Segoe UI", Tahoma, Verdana, sans-serif;
+                --secondary-font:
+                    "Merriweather", Cambria, Cochin, Georgia, Times,
+                    "Times New Roman", serif;
             }
             body {
                 padding: 0px;
@@ -116,8 +159,8 @@
                     bottom: 0;
                     left: 0;
                     z-index: -1;
-                    margin: -3px; /* !importanté */
-                    border-radius: inherit; /* !importanté */
+                    margin: -3px;
+                    border-radius: inherit;
                     background: linear-gradient(
                         to right,
                         rgba(255, 0, 0, 0.5),
@@ -130,8 +173,8 @@
                 position: relative;
                 box-sizing: border-box;
                 background: #fff;
-                background-clip: padding-box; /* !importanté */
-                border: solid 3px transparent; /* !importanté */
+                background-clip: padding-box;
+                border: solid 3px transparent;
 
                 &:before {
                     content: "";
@@ -141,8 +184,8 @@
                     bottom: 0;
                     left: 0;
                     z-index: -1;
-                    margin: -3px; /* !importanté */
-                    border-radius: inherit; /* !importanté */
+                    margin: -3px;
+                    border-radius: inherit;
                     background: linear-gradient(
                         to right,
                         rgb(233, 109, 255, 0.5),
@@ -155,8 +198,8 @@
                 position: relative;
                 box-sizing: border-box;
                 background: #fff;
-                background-clip: padding-box; /* !importanté */
-                border: solid 3px transparent; /* !importanté */
+                background-clip: padding-box;
+                border: solid 3px transparent;
 
                 &:before {
                     content: "";
@@ -178,8 +221,8 @@
             .name-header-container {
                 padding: 30px 0px 0px 30px;
                 font-weight: 700;
-                font-size: 24px;
-                line-height: 20px;
+                font-size: 2rem;
+                line-height: 1.7rem;
                 position: fixed;
                 top: 0px;
                 left: 0px;
@@ -188,6 +231,8 @@
                 display: flex;
                 align-items: center;
                 gap: 10px;
+                justify-content: center;
+                width: 100%;
             }
             @keyframes name-header-anim {
                 from {
@@ -270,512 +315,693 @@
                 margin-top: 50px;
                 margin-bottom: 50px;
             }
+            .panel-switcher {
+                display: flex;
+                font-weight: 800;
+                width: min-content;
+                justify-content: center;
+                border-radius: 6px;
+                margin-right: 50px;
+                margin-left: auto;
+            }
+            .panel-choice {
+                color: white;
+                text-decoration: none;
+                background-color: orange;
+                padding: 4px 10px 4px 10px;
+                display: flex;
+                justify-content: center;
+                transition: 0.4s;
+                position: relative;
+                border: none;
+                cursor: pointer;
+                font-size: 1rem;
+            }
+            .panel-choice:hover {
+                box-shadow: none;
+            }
+            .blog-post-link {
+                text-decoration: none;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 1.25rem 0;
+                border-bottom: 1px solid #f0f0f0;
+                color: #1a1a1a;
+                gap: 1rem;
+                transition: 0.25s;
+            }
+            .blog-post-link:first-child {
+                border-top: 1px solid #f0f0f0;
+            }
+            .blog-post-link:hover {
+                padding-left: 14px;
+                border-bottom-color: orange;
+            }
+            .blog-post-link .post-meta {
+                display: flex;
+                flex-direction: column;
+                gap: 0.2rem;
+            }
+            .blog-post-link .post-date {
+                font-family: var(--primary-font);
+                font-size: 0.72rem;
+                color: #b0b0b0;
+                font-weight: 700;
+                letter-spacing: 0.06em;
+                text-transform: uppercase;
+            }
+            .blog-post-link .post-title {
+                font-family: var(--primary-font);
+                font-size: 1.05rem;
+                font-weight: 700;
+                color: #1a1a1a;
+            }
+            .blog-post-link .post-arrow {
+                color: #d0d0d0;
+                transition: 0.25s;
+                flex-shrink: 0;
+            }
+            .blog-post-link:hover .post-arrow {
+                color: orange;
+                transform: translateX(6px);
+            }
         </style>
     </head>
     <body>
-        <a
-            href="#"
-            style="color: black; text-decoration: none"
-            class="name-header-container"
-        >
-            <img src="ico.png" width="50">
-            <div>
-                Carson<br />
-                Cummins
-            </div>
-        </a>
-        <div style="width: 100vw; height: 100vh">
-            <div
+        <div class="name-header-container">
+            <a
+                href="#"
                 style="
+                    color: black;
+                    text-decoration: none;
                     display: flex;
-                    align-items: center;
-                    padding-left: 14vw;
-                    height: 100vh;
+                    gap: 10px;
                 "
             >
+                <img src="assets/ico.png" width="50" />
                 <div>
-                    <div
-                        style="
-                            color: #b0b0b0;
-                            font-size: 14px;
-                            font-family: var(--secondary-font);
-                        "
-                    >
-                        Hi there. I'm
-                    </div>
-                    <div style="font-size: 50px; font-weight: 700">
-                        Carson Cummins.
-                    </div>
-                    <div
-                        style="
-                            font-size: 50px;
-                            font-weight: 700;
-                            display: flex;
-                            gap: 10px;
-                        "
-                    >
-                        <div id="typing"></div>
-                    </div>
+                    Carson<br />
+                    Cummins
+                </div>
+            </a>
+            <div class="panel-switcher">
+                <button
+                    id="adventure-panel-choose"
+                    class="panel-choice"
+                    onclick="set_panel('adventure')"
+                    style="
+                        border-radius: 6px 0px 0px 6px;
+                        background-color: #b0b0b0;
+                    "
+                >
+                    ⛰️
+                </button>
+                <button
+                    class="panel-choice"
+                    id="professional-panel-choose"
+                    style="border-radius: 0px 6px 6px 0px"
+                    onclick="set_panel('professional')"
+                >
+                    💻
+                </button>
+            </div>
+        </div>
+        <div id="adventure-div" hidden>
+            <div
+                style="
+                    max-width: 680px;
+                    margin: 0 auto;
+                    padding: 8rem 2rem 6rem;
+                "
+            >
+                <h1
+                    style="
+                        font-family: var(--primary-font);
+                        font-weight: 800;
+                        font-size: 2rem;
+                        margin: 0 0 0.2rem;
+                        color: #1a1a1a;
+                    "
+                >
+                    Blog
+                </h1>
+                <div id="blog-links"></div>
+            </div>
+        </div>
+        <div id="professional-div">
+            <div style="width: 100vw; height: 100vh">
+                <div
+                    style="
+                        display: flex;
+                        align-items: center;
+                        padding-left: 14vw;
+                        height: 100vh;
+                    "
+                >
                     <div>
-                        <a href="#readme" class="unique-link">
-                            <div>readme</div>
-                            <?xml version="1.0" encoding="UTF-8"?><svg
-                                width="24px"
-                                height="24px"
-                                stroke-width="1.5"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                xmlns="http://www.w3.org/2000/svg"
-                                color="#b0b0b0"
-                            >
-                                <path
-                                    d="M8 12h8m0 0l-3.5-3.5M16 12l-3.5 3.5M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"
-                                    stroke="#b0b0b0"
+                        <div
+                            style="
+                                color: #b0b0b0;
+                                font-size: 14px;
+                                font-family: var(--secondary-font);
+                            "
+                        >
+                            What's up! I'm
+                        </div>
+                        <div style="font-size: 50px; font-weight: 700">
+                            Carson Cummins.
+                        </div>
+                        <div
+                            style="
+                                font-size: 50px;
+                                font-weight: 700;
+                                display: flex;
+                                gap: 10px;
+                            "
+                        >
+                            <div id="typing"></div>
+                        </div>
+                        <div>
+                            <a href="#readme" class="unique-link">
+                                <div>readme</div>
+                                <?xml version="1.0" encoding="UTF-8"?><svg
+                                    width="24px"
+                                    height="24px"
                                     stroke-width="1.5"
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                ></path>
-                            </svg>
-                        </a>
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    color="#b0b0b0"
+                                >
+                                    <path
+                                        d="M8 12h8m0 0l-3.5-3.5M16 12l-3.5 3.5M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"
+                                        stroke="#b0b0b0"
+                                        stroke-width="1.5"
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                    ></path>
+                                </svg>
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-        <div
-            style="
-                width: 100vw;
-                display: flex;
-                justify-content: center;
-                position: relative;
-                top: -30px;
-                color: #b0b0b0;
-                gap: 10px;
-            "
-        >
-            <div style="font-family: var(--secondary-font)">
-                Stuff I've made
-            </div>
-            <svg
-                width="24"
-                height="24"
-                stroke-width="1.5"
-                viewBox="0 0 24 24"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-            >
-                <path
-                    d="M19 13.5L15.5 17L12 13.5"
-                    stroke="currentColor"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                />
-                <path
-                    d="M15.5 17V11C15.5 8.79086 13.7091 7 11.5 7H4.5"
-                    stroke="currentColor"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                />
-            </svg>
-        </div>
-        <div
-            style="
-                width: 100%;
-                display: flex;
-                gap: 50px;
-                justify-content: center;
-                flex-wrap: wrap;
-            "
-        >
-            <a
-                href="https://joinaura.io"
+            <div
                 style="
-                    background-image: url('aura-3.png');
-                    background-position: center center;
-                    background-size: cover;
-                    width: 600px;
-                    height: 369px;
-                    display: block;
-                    text-decoration: none;
-                    color: white;
+                    width: 100vw;
+                    display: flex;
+                    justify-content: center;
+                    position: relative;
+                    top: -30px;
+                    color: #b0b0b0;
+                    gap: 10px;
                 "
             >
-                <div
-                    class="show-on-hover"
-                    style="color: black; text-decoration: none"
+                <div style="font-family: var(--secondary-font)">
+                    Stuff I've made
+                </div>
+                <svg
+                    width="24"
+                    height="24"
+                    stroke-width="1.5"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
                 >
-                    <img style="width: 150px" src="logo.svg" />
+                    <path
+                        d="M19 13.5L15.5 17L12 13.5"
+                        stroke="currentColor"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                    />
+                    <path
+                        d="M15.5 17V11C15.5 8.79086 13.7091 7 11.5 7H4.5"
+                        stroke="currentColor"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                    />
+                </svg>
+            </div>
+            <div
+                style="
+                    width: 100%;
+                    display: flex;
+                    gap: 50px;
+                    justify-content: center;
+                    flex-wrap: wrap;
+                "
+            >
+                <a
+                    href="https://joinaura.io"
+                    style="
+                        background-image: url(&quot;assets/aura-3.png&quot;);
+                        background-position: center center;
+                        background-size: cover;
+                        width: 600px;
+                        height: 369px;
+                        display: block;
+                        text-decoration: none;
+                        color: white;
+                    "
+                >
+                    <div
+                        class="show-on-hover"
+                        style="color: black; text-decoration: none"
+                    >
+                        <img style="width: 150px" src="assets/logo.svg" />
+                        <div
+                            style="
+                                font-size: 12px;
+                                max-width: 230px;
+                                margin-top: 15px;
+                            "
+                        >
+                            AURA is the easiest way to find research
+                            opportunities at universities across the country.
+                        </div>
+                    </div>
+                </a>
+                <a
+                    href="https://applicationspark.org"
+                    style="
+                        background-image: url(&quot;assets/applicationspark.png&quot;);
+                        background-position: center center;
+                        background-size: cover;
+                        width: 600px;
+                        height: 369px;
+                        display: block;
+                        text-decoration: none;
+                        color: white;
+                    "
+                >
+                    <div
+                        class="show-on-hover"
+                        style="color: black; text-decoration: none"
+                    >
+                        <div>Application Spark</div>
+                        <div style="font-size: 12px; max-width: 200px">
+                            A grant focused tool for managing high volume
+                            application processes.
+                        </div>
+                    </div>
+                </a>
+                <a
+                    href="assets/aejpg.pdf"
+                    style="
+                        background-image: url(&quot;assets/aejpg.png&quot;);
+                        background-position: center center;
+                        background-size: cover;
+                        width: 600px;
+                        height: 369px;
+                        display: block;
+                        text-decoration: none;
+                        color: white;
+                    "
+                >
+                    <div
+                        class="show-on-hover"
+                        style="color: black; text-decoration: none"
+                    >
+                        <div>jpg stack rewrite</div>
+                        <div style="font-size: 12px; max-width: 200px">
+                            A paper I wrote for a visual computing class in
+                            college on reducing the size of jpg images using an
+                            autoencoding neural network integrated into my own
+                            rewrite of the jpeg compression stack
+                        </div>
+                    </div>
+                </a>
+                <a
+                    href="https://containerfactory.xyz"
+                    style="
+                        background-image: url(&quot;assets/containerfactory.png&quot;);
+                        background-position: center center;
+                        background-size: cover;
+                        width: 600px;
+                        height: 369px;
+                        display: block;
+                        text-decoration: none;
+                        color: white;
+                    "
+                >
+                    <div
+                        class="show-on-hover"
+                        style="color: black; text-decoration: none"
+                    >
+                        <div>containerfactory.xyz</div>
+                        <div style="font-size: 12px; max-width: 200px">
+                            A nocode dockerfile generation tool that simplifies
+                            getting started with docker.
+                        </div>
+                    </div>
+                </a>
+                <a
+                    href="https://carsoncummins11.github.io/RochesterApplication/"
+                    style="
+                        background-image: url(&quot;assets/roc.png&quot;);
+                        background-position: center center;
+                        background-size: cover;
+                        width: 600px;
+                        height: 369px;
+                        display: block;
+                        text-decoration: none;
+                        color: white;
+                    "
+                >
+                    <div
+                        class="show-on-hover"
+                        style="color: black; text-decoration: none"
+                    >
+                        <div>College application</div>
+                        <div style="font-size: 12px; max-width: 200px">
+                            My undergrad's application process allowed for the
+                            submission of something unique to show off, so I
+                            wrote this website that uses a genetic algorithm to
+                            decide on the school over a few simulated
+                            generations.
+                        </div>
+                    </div>
+                </a>
+                <a
+                    href="https://carsoncummins11.github.io/HilbertCurve/"
+                    style="
+                        background-image: url(&quot;assets/hilbert.png&quot;);
+                        background-position: center center;
+                        background-size: cover;
+                        width: 600px;
+                        height: 369px;
+                        display: block;
+                        text-decoration: none;
+                        color: white;
+                    "
+                >
+                    <div
+                        class="show-on-hover"
+                        style="color: black; text-decoration: none"
+                    >
+                        <div>Hilbert curves</div>
+                        <div style="font-size: 12px; max-width: 200px">
+                            This goes over some of my thought process while
+                            making a Java library for generating Hilbert Curves,
+                            a method for neatly filling 2d space with a 1d
+                            object.
+                        </div>
+                    </div>
+                </a>
+            </div>
+            <div
+                style="
+                    width: 100vw;
+                    display: flex;
+                    justify-content: center;
+                    position: relative;
+                    margin-top: 300px;
+                    color: #b0b0b0;
+                    gap: 10px;
+                "
+            >
+                <div style="font-family: var(--secondary-font)">
+                    Jobs I've had
+                </div>
+                <svg
+                    width="24"
+                    height="24"
+                    stroke-width="1.5"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                >
+                    <path
+                        d="M19 13.5L15.5 17L12 13.5"
+                        stroke="currentColor"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                    />
+                    <path
+                        d="M15.5 17V11C15.5 8.79086 13.7091 7 11.5 7H4.5"
+                        stroke="currentColor"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                    />
+                </svg>
+            </div>
+            <div
+                style="
+                    width: calc(100% - 180px);
+                    margin: 90px;
+                    margin-top: 30px;
+                    font-family: var(--primary-font);
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    justify-content: center;
+                    gap: 80px;
+                "
+            >
+                <div class="resume-section gradient-box-red">
+                    <div
+                        style="display: flex; gap: 15px; flex-direction: column"
+                    >
+                        <img src="assets/slack.svg" style="width: 120px" />
+                        <div
+                            style="
+                                color: #b0b0b0;
+                                font-size: 14px;
+                                font-weight: 600;
+                                font-family: var(--primary-font);
+                            "
+                        >
+                            Software Developer
+                        </div>
+                    </div>
                     <div
                         style="
-                            font-size: 12px;
-                            max-width: 230px;
+                            color: #b0b0b0;
+                            font-size: 18px;
                             margin-top: 15px;
                         "
                     >
-                        AURA is the easiest way to find research opportunities
-                        at universities across the country.
+                        Working on data platform engineering team for Quip /
+                        Slack Canvas.
                     </div>
                 </div>
-            </a>
-            <a
-                href="https://applicationspark.org"
-                style="
-                    background-image: url('applicationspark.png');
-                    background-position: center center;
-                    background-size: cover;
-                    width: 600px;
-                    height: 369px;
-                    display: block;
-                    text-decoration: none;
-                    color: white;
-                "
-            >
-                <div
-                    class="show-on-hover"
-                    style="color: black; text-decoration: none"
-                >
-                <div>Application Spark</div>
-                    <div style="font-size: 12px; max-width: 200px">
-                        A grant focused tool for managing high volume application processes.
-                    </div>
-                </div>
-            </a>
-            <a
-                href="aejpg.pdf"
-                style="
-                    background-image: url('aejpg.png');
-                    background-position: center center;
-                    background-size: cover;
-                    width: 600px;
-                    height: 369px;
-                    display: block;
-                    text-decoration: none;
-                    color: white;
-                "
-            >
-                <div
-                    class="show-on-hover"
-                    style="color: black; text-decoration: none"
-                >
-                    <div>jpg stack rewrite</div>
-                    <div style="font-size: 12px; max-width: 200px">
-                        A paper I wrote for a visual computing class in college
-                        on reducing the size of jpg images using an autoencoding 
-                        neural network integrated into my own rewrite of the jpeg
-                        compression stack
-                    </div>
-                </div>
-            </a>
-            <a
-                href="https://containerfactory.xyz"
-                style="
-                    background-image: url('containerfactory.png');
-                    background-position: center center;
-                    background-size: cover;
-                    width: 600px;
-                    height: 369px;
-                    display: block;
-                    text-decoration: none;
-                    color: white;
-                "
-            >
-                <div
-                    class="show-on-hover"
-                    style="color: black; text-decoration: none"
-                >
-                    <div>containerfactory.xyz</div>
-                    <div style="font-size: 12px; max-width: 200px">
-                        A nocode dockerfile generation tool that simplifies
-                        getting started with docker.
-                    </div>
-                </div>
-            </a>
-            <a
-                href="https://carsoncummins11.github.io/RochesterApplication/"
-                style="
-                    background-image: url('roc.png');
-                    background-position: center center;
-                    background-size: cover;
-                    width: 600px;
-                    height: 369px;
-                    display: block;
-                    text-decoration: none;
-                    color: white;
-                "
-            >
-                <div
-                    class="show-on-hover"
-                    style="color: black; text-decoration: none"
-                >
-                    <div>College application</div>
-                    <div style="font-size: 12px; max-width: 200px">
-                        My undergrad's application process allowed for the
-                        submission of something unique to show off, so I wrote
-                        this website that uses a genetic algorithm to decide on
-                        the school over a few simulated generations.
-                    </div>
-                </div>
-            </a>
-            <a
-                href="https://carsoncummins11.github.io/HilbertCurve/"
-                style="
-                    background-image: url('hilbert.png');
-                    background-position: center center;
-                    background-size: cover;
-                    width: 600px;
-                    height: 369px;
-                    display: block;
-                    text-decoration: none;
-                    color: white;
-                "
-            >
-                <div
-                    class="show-on-hover"
-                    style="color: black; text-decoration: none"
-                >
-                    <div>Hilbert curves</div>
-                    <div style="font-size: 12px; max-width: 200px">
-                        This goes over some of my thought process while making a
-                        Java library for generating Hilbert Curves, a method for
-                        neatly filling 2d space with a 1d object.
-                    </div>
-                </div>
-            </a>
-        </div>
-        <div
-            style="
-                width: 100vw;
-                display: flex;
-                justify-content: center;
-                position: relative;
-                margin-top: 300px;
-                color: #b0b0b0;
-                gap: 10px;
-            "
-        >
-            <div style="font-family: var(--secondary-font)">Jobs I've had</div>
-            <svg
-                width="24"
-                height="24"
-                stroke-width="1.5"
-                viewBox="0 0 24 24"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-            >
-                <path
-                    d="M19 13.5L15.5 17L12 13.5"
-                    stroke="currentColor"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                />
-                <path
-                    d="M15.5 17V11C15.5 8.79086 13.7091 7 11.5 7H4.5"
-                    stroke="currentColor"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                />
-            </svg>
-        </div>
-        <div
-            style="
-                width: calc(100% - 180px);
-                margin: 90px;
-                margin-top: 30px;
-                font-family: var(--primary-font);
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                justify-content: center;
-                gap: 80px;
-            "
-        >
-        <div class="resume-section gradient-box-red">
-            <div style="display: flex; gap: 15px; flex-direction: column">
-                <img src="slack.svg" style="width: 120px" />
-                <div
-                    style="
-                        color: #b0b0b0;
-                        font-size: 14px;
-                        font-weight: 600;
-                        font-family: var(--primary-font);
-                    "
-                >
-                    Software Developer
-                </div>
-            </div>
-            <div style="color: #b0b0b0; font-size: 18px; margin-top: 15px">
-                Working on data platform engineering team for Quip / Slack Canvas.
-            </div>
-        </div>
-        <div class="resume-section gradient-box-red">
-            <div style="display: flex; gap: 15px; flex-direction: column">
-                <img src="quizard.png" style="width: 120px" />
-                <div
-                    style="
-                        color: #b0b0b0;
-                        font-size: 14px;
-                        font-weight: 600;
-                        font-family: var(--primary-font);
-                    "
-                >
-                    Software Developer
-                </div>
-            </div>
-            <div style="color: #b0b0b0; font-size: 18px; margin-top: 15px">
-                Worked across the full stack for LLM startup <a style="color: #b0b0b0;" href="https://quizard.ai">Quizard.ai</a>
-            </div>
-        </div>
-            <div class="resume-section gradient-box-red">
-                <div style="display: flex; gap: 15px; flex-direction: column">
-                    <img src="quip.svg" style="width: 100px" />
+                <div class="resume-section gradient-box-red">
                     <div
-                        style="
-                            color: #b0b0b0;
-                            font-size: 14px;
-                            font-weight: 600;
-                            font-family: var(--primary-font);
-                        "
+                        style="display: flex; gap: 15px; flex-direction: column"
                     >
-                        Data platform software engineering intern
-                    </div>
-                </div>
-                <div style="color: #b0b0b0; font-size: 18px; margin-top: 15px">
-                    Worked on the data platform team, focusing on pipeline heatlh and EKM features.
-                </div>
-            </div>
-            <div class="resume-section gradient-box-blue">
-                <div style="display: flex; gap: 15px; flex-direction: column">
-                    <img src="slack.svg" style="width: 120px" />
-                    <div
-                        style="
-                            color: #b0b0b0;
-                            font-size: 14px;
-                            font-weight: 600;
-                        "
-                    >
-                        Security software engineering intern
-                    </div>
-                </div>
-                <div style="color: #b0b0b0; font-size: 18px; margin-top: 15px">
-                    Worked on IAM team, specifically focused on role request automation.
-                </div>
-            </div>
-            <div class="resume-section gradient-box-green">
-                <div style="display: flex; gap: 15px; flex-direction: column">
-                    <img src="rs.png" style="width: 190px" />
-                    <div
-                        style="
-                            color: #b0b0b0;
-                            font-size: 14px;
-                            font-weight: 600;
-                        "
-                    >
-                        Software engineering intern
-                    </div>
-                </div>
-                <div style="color: #b0b0b0; font-size: 18px; margin-top: 15px">
-                    Worked on device testing team, focused on containerizing the testing pipeline.
-                </div>
-            </div>
-        </div>
-        <div
-            style="
-                width: 100%;
-                padding-bottom: 40px;
-                align-items: center;
-                justify-content: center;
-                display: flex;
-                font-family: var(--secondary-font);
-                color: #b0b0b0;
-            "
-        >
-            <div id="readme" style="margin: 100px 0px 100px 0px">
-                <div
-                    style="
-                        width: 100%;
-                        display: flex;
-                        justify-content: center;
-                        color: #b0b0b0;
-                        gap: 10px;
-                    "
-                >
-                    <div style="font-family: var(--secondary-font)">readme</div>
-                    <svg
-                        width="24"
-                        height="24"
-                        stroke-width="1.5"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                    >
-                        <path
-                            d="M19 13.5L15.5 17L12 13.5"
-                            stroke="currentColor"
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                        />
-                        <path
-                            d="M15.5 17V11C15.5 8.79086 13.7091 7 11.5 7H4.5"
-                            stroke="currentColor"
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                        />
-                    </svg>
-                </div>
-                <div style="display: flex; justify-content: center">
-                    <div
-                        style="
-                            max-width: 600px;
-                            margin-top: 25px;
-                            line-height: 35px;
-                        "
-                    >
-                        <span style="font-size: 24px; margin-right: 10px"
-                            >👋</span
+                        <img src="assets/quizard.png" style="width: 120px" />
+                        <div
+                            style="
+                                color: #b0b0b0;
+                                font-size: 14px;
+                                font-weight: 600;
+                                font-family: var(--primary-font);
+                            "
                         >
-                        I'm Carson, a software developer from Oregon who works
-                        on data platform engineering @ Slack. I'm really interested 
-                        in solving hard, high impact problems that improve people's lives. 
-                        Throughout college, I built
-                        <a style="color: #8a8a8a" href="https://joinaura.io"
-                            >AURA</a
-                        >, which has helped connect hundreds of different
-                        students with research, and is still helping out
-                        students today. Right now, I'm working on <a style="color: #8a8a8a" href="https://github.com/CarsonCummins11/related"
-                        >related</a
-                    > , a DSL for
-                        API creation built to be written by LLMs.
+                            Software Developer
+                        </div>
+                    </div>
+                    <div
+                        style="
+                            color: #b0b0b0;
+                            font-size: 18px;
+                            margin-top: 15px;
+                        "
+                    >
+                        Worked across the full stack for LLM startup
+                        <a style="color: #b0b0b0" href="https://quizard.ai"
+                            >Quizard.ai</a
+                        >
+                    </div>
+                </div>
+                <div class="resume-section gradient-box-red">
+                    <div
+                        style="display: flex; gap: 15px; flex-direction: column"
+                    >
+                        <img src="assets/quip.svg" style="width: 100px" />
+                        <div
+                            style="
+                                color: #b0b0b0;
+                                font-size: 14px;
+                                font-weight: 600;
+                                font-family: var(--primary-font);
+                            "
+                        >
+                            Data platform software engineering intern
+                        </div>
+                    </div>
+                    <div
+                        style="
+                            color: #b0b0b0;
+                            font-size: 18px;
+                            margin-top: 15px;
+                        "
+                    >
+                        Worked on the data platform team, focusing on pipeline
+                        heatlh and EKM features.
+                    </div>
+                </div>
+                <div class="resume-section gradient-box-blue">
+                    <div
+                        style="display: flex; gap: 15px; flex-direction: column"
+                    >
+                        <img src="assets/slack.svg" style="width: 120px" />
+                        <div
+                            style="
+                                color: #b0b0b0;
+                                font-size: 14px;
+                                font-weight: 600;
+                            "
+                        >
+                            Security software engineering intern
+                        </div>
+                    </div>
+                    <div
+                        style="
+                            color: #b0b0b0;
+                            font-size: 18px;
+                            margin-top: 15px;
+                        "
+                    >
+                        Worked on IAM team, specifically focused on role request
+                        automation.
+                    </div>
+                </div>
+                <div class="resume-section gradient-box-green">
+                    <div
+                        style="display: flex; gap: 15px; flex-direction: column"
+                    >
+                        <img src="assets/rs.png" style="width: 190px" />
+                        <div
+                            style="
+                                color: #b0b0b0;
+                                font-size: 14px;
+                                font-weight: 600;
+                            "
+                        >
+                            Software engineering intern
+                        </div>
+                    </div>
+                    <div
+                        style="
+                            color: #b0b0b0;
+                            font-size: 18px;
+                            margin-top: 15px;
+                        "
+                    >
+                        Worked on device testing team, focused on containerizing
+                        the testing pipeline.
                     </div>
                 </div>
             </div>
-        </div>
-        <div
-            style="
-                min-height: 200px;
-                width: 100%;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                font-size: 24px;
-                font-weight: 600;
-            "
-        >
-            Send over an
-            <a href="mailto:carson.cummins11@gmail.com" class="email-link"
-                >email</a
+            <div
+                style="
+                    width: 100%;
+                    padding-bottom: 40px;
+                    align-items: center;
+                    justify-content: center;
+                    display: flex;
+                    font-family: var(--secondary-font);
+                    color: #b0b0b0;
+                "
             >
-            if you want to chat!
-        </div>
-        <div
-            style="
-                width: 100%;
-                padding-bottom: 40px;
-                align-items: center;
-                justify-content: center;
-                display: flex;
-                font-family: var(--secondary-font);
-            "
-        >
-            <a href="resume.pdf" style="color: #b0b0b0">my resume</a>
+                <div id="readme" style="margin: 100px 0px 100px 0px">
+                    <div
+                        style="
+                            width: 100%;
+                            display: flex;
+                            justify-content: center;
+                            color: #b0b0b0;
+                            gap: 10px;
+                        "
+                    >
+                        <div style="font-family: var(--secondary-font)">
+                            readme
+                        </div>
+                        <svg
+                            width="24"
+                            height="24"
+                            stroke-width="1.5"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg"
+                        >
+                            <path
+                                d="M19 13.5L15.5 17L12 13.5"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                            />
+                            <path
+                                d="M15.5 17V11C15.5 8.79086 13.7091 7 11.5 7H4.5"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                            />
+                        </svg>
+                    </div>
+                    <div style="display: flex; justify-content: center">
+                        <div
+                            style="
+                                max-width: 600px;
+                                margin-top: 25px;
+                                line-height: 35px;
+                            "
+                        >
+                            <span style="font-size: 24px; margin-right: 10px"
+                                >👋</span
+                            >
+                            I'm Carson, a seattle based software engineer who
+                            works on the data platform @ Slack. I'm really
+                            interested in solving hard, high impact problems
+                            that improve people's lives. Throughout college, I
+                            built
+                            <a style="color: #8a8a8a" href="https://joinaura.io"
+                                >AURA</a
+                            >, which has helped connect hundreds of different
+                            students with research, and is still helping out
+                            students today. Right now, I'm working on
+                            <a
+                                style="color: #8a8a8a"
+                                href="https://github.com/CarsonCummins11/related"
+                                >related</a
+                            >
+                            , a DSL for API creation built to be written by
+                            LLMs.
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div
+                style="
+                    min-height: 200px;
+                    width: 100%;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    font-size: 24px;
+                    font-weight: 600;
+                "
+            >
+                Send over an
+                <a href="mailto:carson.cummins11@gmail.com" class="email-link"
+                    >email</a
+                >
+                if you want to chat!
+            </div>
+            <div
+                style="
+                    width: 100%;
+                    padding-bottom: 40px;
+                    align-items: center;
+                    justify-content: center;
+                    display: flex;
+                    font-family: var(--secondary-font);
+                "
+            >
+                <a href="assets/resume.pdf" style="color: #b0b0b0">my resume</a>
+            </div>
         </div>
     </body>
 </html>
