@@ -1,7 +1,21 @@
+import csv
+import io
 import json
 import os
 import sys
+import urllib.request
 from datetime import datetime
+
+try:
+    with urllib.request.urlopen(
+        "https://www.mountainproject.com/user/201537333/carson-cummins/tick-export"
+    ) as resp:
+        ticks = list(csv.DictReader(io.StringIO(resp.read().decode("utf-8"))))
+    with open("ticks.json", "w") as f:
+        json.dump(ticks, f)
+    print(f"Fetched {len(ticks)} ticks")
+except Exception as e:
+    print(f"Could not fetch ticks: {e}")
 
 with open("blog_metadata.json") as f:
     blog_metadata = json.load(f)
