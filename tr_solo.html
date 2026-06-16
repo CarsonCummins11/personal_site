@@ -1,0 +1,973 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>WA Top-Rope-Solo Crag Atlas</title>
+        <link
+            rel="stylesheet"
+            href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+            integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+            crossorigin=""
+        />
+        <script
+            src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+            integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+            crossorigin=""
+        ></script>
+        <style>
+            :root {
+                --bg: #14171c;
+                --panel: #1d2128;
+                --panel2: #252a33;
+                --text: #e6e8eb;
+                --muted: #9aa3af;
+                --accent: #4ea1ff;
+                --accent2: #ffb454;
+                --line: #39404b;
+                --warn: #ff6b6b;
+                --ok: #5fd38d;
+            }
+            * {
+                box-sizing: border-box;
+            }
+            html,
+            body {
+                margin: 0;
+                padding: 0;
+            }
+            body {
+                background: var(--bg);
+                color: var(--text);
+                font-family:
+                    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+                    Helvetica, Arial, sans-serif;
+                line-height: 1.5;
+                font-size: 16px;
+            }
+            a {
+                color: var(--accent);
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            header {
+                padding: 18px 16px;
+                background: linear-gradient(180deg, #1b2330, #14171c);
+                border-bottom: 1px solid var(--line);
+                position: sticky;
+                top: 0;
+                z-index: 1200;
+            }
+            header h1 {
+                margin: 0;
+                font-size: 1.25rem;
+            }
+            header p {
+                margin: 4px 0 0;
+                color: var(--muted);
+                font-size: 0.85rem;
+            }
+            .layout {
+                display: flex;
+                min-height: 100vh;
+            }
+            nav {
+                width: 230px;
+                flex: 0 0 230px;
+                background: var(--panel);
+                border-right: 1px solid var(--line);
+                padding: 12px;
+                position: sticky;
+                top: 74px;
+                align-self: flex-start;
+                height: calc(100vh - 74px);
+                overflow: auto;
+            }
+            nav h2 {
+                font-size: 0.7rem;
+                text-transform: uppercase;
+                letter-spacing: 0.08em;
+                color: var(--muted);
+                margin: 14px 6px 6px;
+            }
+            nav a {
+                display: block;
+                padding: 8px 10px;
+                border-radius: 8px;
+                color: var(--text);
+                font-size: 0.9rem;
+            }
+            nav a:hover {
+                background: var(--panel2);
+                text-decoration: none;
+            }
+            main {
+                flex: 1;
+                padding: 16px;
+                max-width: 920px;
+                margin: 0 auto;
+            }
+            .disclaimer {
+                background: #3a1d1d;
+                border: 1px solid var(--warn);
+                border-radius: 10px;
+                padding: 12px 14px;
+                margin-bottom: 18px;
+                font-size: 0.85rem;
+            }
+            .disclaimer strong {
+                color: var(--warn);
+            }
+            .crag {
+                background: var(--panel);
+                border: 1px solid var(--line);
+                border-radius: 14px;
+                padding: 16px;
+                margin-bottom: 26px;
+            }
+            .crag h3 {
+                margin: 0 0 4px;
+                font-size: 1.15rem;
+            }
+            .meta {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 8px;
+                margin: 10px 0;
+            }
+            .chip {
+                background: var(--panel2);
+                border: 1px solid var(--line);
+                border-radius: 999px;
+                padding: 4px 10px;
+                font-size: 0.75rem;
+                color: var(--muted);
+            }
+            .chip b {
+                color: var(--text);
+                font-weight: 600;
+            }
+            .map {
+                height: 300px;
+                border-radius: 10px;
+                margin: 12px 0;
+                border: 1px solid var(--line);
+            }
+            .btn {
+                display: inline-block;
+                background: var(--accent);
+                color: #06223f;
+                font-weight: 600;
+                border: none;
+                border-radius: 9px;
+                padding: 9px 14px;
+                font-size: 0.85rem;
+                cursor: pointer;
+                margin: 2px 0 8px;
+            }
+            .btn:hover {
+                filter: brightness(1.08);
+            }
+            .note {
+                font-size: 0.85rem;
+                color: var(--muted);
+                margin: 8px 0;
+            }
+            .access {
+                background: #2a241a;
+                border-left: 3px solid var(--accent2);
+                padding: 8px 12px;
+                border-radius: 6px;
+                font-size: 0.85rem;
+                margin: 8px 0;
+            }
+            .verify {
+                background: #3a1d1d;
+                border-left: 3px solid var(--warn);
+                padding: 8px 12px;
+                border-radius: 6px;
+                font-size: 0.85rem;
+                margin: 8px 0;
+            }
+            table {
+                width: 100%;
+                border-collapse: collapse;
+                margin: 10px 0;
+                font-size: 0.82rem;
+            }
+            th,
+            td {
+                text-align: left;
+                padding: 8px;
+                border-bottom: 1px solid var(--line);
+                vertical-align: top;
+            }
+            th {
+                color: var(--accent2);
+                font-size: 0.72rem;
+                text-transform: uppercase;
+                letter-spacing: 0.05em;
+            }
+            td.g {
+                white-space: nowrap;
+                color: var(--muted);
+            }
+            details {
+                margin-top: 10px;
+            }
+            summary {
+                cursor: pointer;
+                color: var(--accent);
+                font-size: 0.85rem;
+            }
+            .src {
+                font-size: 0.78rem;
+                color: var(--muted);
+            }
+            h4 {
+                margin: 14px 0 4px;
+                font-size: 0.95rem;
+                color: var(--accent2);
+            }
+            footer {
+                padding: 24px 16px;
+                color: var(--muted);
+                font-size: 0.8rem;
+                border-top: 1px solid var(--line);
+            }
+            @media (max-width: 760px) {
+                .layout {
+                    flex-direction: column;
+                }
+                nav {
+                    position: static;
+                    width: auto;
+                    height: auto;
+                    flex: none;
+                    display: flex;
+                    flex-wrap: wrap;
+                    gap: 4px;
+                    border-right: none;
+                    border-bottom: 1px solid var(--line);
+                }
+                nav h2 {
+                    width: 100%;
+                }
+                nav a {
+                    flex: 1 1 auto;
+                    text-align: center;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <header>
+            <h1>Washington Top-Rope-Solo Crag Atlas</h1>
+            <p>
+                Walk/scramble top-access crags for rigging fixed lines from
+                above · approximate beta, verify in the field
+            </p>
+        </header>
+        <div class="layout">
+            <nav>
+                <h2>Crags</h2>
+                <a href="#exit38">Exit 38 — Write-Off &amp; Gritscone</a>
+                <a href="#exit32">Exit 32 — Repo I</a>
+                <a href="#erie">Mount Erie</a>
+                <a href="#tieton">Tieton — Royal Columns</a>
+                <a href="#minne">Minnehaha (Spokane)</a>
+                <a href="#larrabee">Larrabee Boat Launch</a>
+                <h2>Reference</h2>
+                <a href="#excluded">Excluded areas</a>
+                <a href="#sources">Sources</a>
+            </nav>
+            <main>
+                <div class="disclaimer">
+                    <strong>READ FIRST — DISCLAIMER.</strong> All coordinates,
+                    tracks, and waypoints here are <em>approximate</em> and
+                    derived from public sources (Mountain Project, WCC, WTA, The
+                    Mountaineers, SummitPost, guidebooks). Some are explicitly
+                    inferred or unconfirmed. Rock, bolts, anchors, and closures
+                    change — a basalt column collapsed at Tieton in 2017.
+                    Climbing and especially top-rope soloing are dangerous; no
+                    one checks your system. Verify every anchor, edge, approach,
+                    tide, and closure yourself. Respect raptor closures and
+                    land-manager rules. This atlas is informational only.
+                </div>
+
+                <div id="crags"></div>
+
+                <div class="crag" id="excluded">
+                    <h3>Investigated but excluded</h3>
+                    <p class="note">
+                        These were researched and did not meet all three
+                        criteria (GPX-grade approach, confirmed foot access to
+                        anchors, concrete top-anchor info) and are intentionally
+                        omitted rather than guessed:
+                    </p>
+                    <ul class="note">
+                        <li>
+                            <b>Frenchman Coulee / Vantage</b> — a top-roping
+                            destination, but per multiple sources "almost none
+                            of the walls have a good place to TR" from above;
+                            the Feathers pillars require climbing a ~5.4 route
+                            or a loose ~5.5 gully downclimb to reach anchors,
+                            and there is loose rock on top. No clean walk-up.
+                        </li>
+                        <li>
+                            <b>Castle Rock (Leavenworth)</b> — 400-ft multipitch
+                            formation with a walk-off, not a single-pitch
+                            walk-to-top TR-solo venue.
+                        </li>
+                        <li>
+                            <b>Peshastin Pinnacles</b> — mostly slab leads with
+                            walk-offs/raps; soft sandstone; top access to set
+                            TRs not cleanly documented for most formations.
+                        </li>
+                        <li>
+                            <b>Index Town Walls</b> — top access to anchors is
+                            limited and not a genuine walk-up.
+                        </li>
+                        <li>
+                            <b
+                                >Deep Creek / Rocks of Sharon / Dishman Hills,
+                                Banks Lake, Static Point, Mailbox/Dirty Harry's,
+                                Mazama/Methow</b
+                            >
+                            — insufficient combined documentation of all three
+                            criteria.
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="crag" id="sources">
+                    <h3>Sources</h3>
+                    <p class="src">
+                        Mountain Project (Deception Crags, Exit 38, Gritscone,
+                        Exit 32/Little Si, World Wall, Repo I, Mount Erie,
+                        Powerline Wall/Area, Royal Columns + route pages,
+                        Minnehaha, The Dihedral, Frenchman Coulee/Feathers,
+                        Clayton Beach) · Washington Climbers Coalition (Exit 38,
+                        Vantage, Tieton, Minnehaha, Larrabee) · Washington
+                        Trails Association (Mount Erie, Peshastin Pinnacles,
+                        Frenchman Coulee, Tieton trip reports) · The
+                        Mountaineers (Exit 38, Vantage, Tieton Royal Columns,
+                        Boat Launch Wall, Clayton Beach, Peshastin) · SummitPost
+                        (Mount Erie, Royal Columns, Castle Rock, Vantage) ·
+                        rakkup &amp; guidebooks: <em>Snoqualmie Rock</em> (Kurt
+                        Hicks), <em>Rockin' on the Rock</em> (Dallas Kloke, Mt
+                        Erie), <em>Inland Northwest Rock Climbs</em> (Marty
+                        Bland, Spokane), <em>Leavenworth Rock</em> (Viktor
+                        Kramar), <em>Frenchman Coulee</em> (Sullivan/Yoder) ·
+                        Spokesman-Review &amp; Yakima Herald (2017 Tieton column
+                        collapse) · HistoryLink (Larrabee 1915) · Washington
+                        State Parks / WDFW.
+                    </p>
+                </div>
+                <footer>
+                    Built from public-source research, June 2026. Approximate
+                    beta — verify everything in the field. Climb safe.
+                </footer>
+            </main>
+        </div>
+
+        <script>
+            /* ---------- CRAG DATA ----------
+ Each crag: trackpoints (approach polyline, [lat,lng]) and waypoints (markers).
+ Coordinates are approximate; flagged where inferred. */
+            const CRAGS = [
+                {
+                    id: "exit38",
+                    name: "Exit 38 — Write-Off Rock & Gritscone (North Bend)",
+                    drive: "~35–40 min from Seattle",
+                    rock: "Metavolcanic 'rhino rock' (fractured, mostly sport)",
+                    season: "Apr–Nov; some routes seep after rain",
+                    grades: "5.4–5.8 (Write-Off) · short routes (Gritscone)",
+                    pass: "Discover Pass for Mt Washington & Far Side lots; partial at Deception",
+                    center: [47.4205, -121.668],
+                    zoom: 14,
+                    topaccess:
+                        "Write-Off Rock is a low-angle slab you can scramble to the top of to set anchors. Gritscone routes 'can be top roped by walking around'; many Gritscone bolts sit BELOW the lip — rig off a large tree above and extend over the edge.",
+                    access: "Deception Wall recurring peregrine closure (typically Mar 1–Jul 15). Substation, Write-Off, Nevermind, We Did Rock stay open during closures. Belay clear of the Iron Horse Trail.",
+                    verify: "",
+                    waypoints: [
+                        {
+                            n: "Deception parking (gravel pullouts, before Change Creek)",
+                            c: [47.4185, -121.6705],
+                            t: "park",
+                        },
+                        {
+                            n: "Trailhead W of Change Creek → Substation",
+                            c: [47.4193, -121.67],
+                            t: "junction",
+                        },
+                        {
+                            n: "Write-Off Rock (top scramble for TR)",
+                            c: [47.4205, -121.6688],
+                            t: "crag",
+                        },
+                        {
+                            n: "Far Side / Dirty Harry's lot (for Gritscone)",
+                            c: [47.4258, -121.6603],
+                            t: "park",
+                        },
+                        {
+                            n: "Gritscone (10–15 min E from bridge)",
+                            c: [47.4243, -121.6562],
+                            t: "crag",
+                        },
+                    ],
+                    track: [
+                        [47.4185, -121.6705],
+                        [47.4193, -121.67],
+                        [47.4205, -121.6688],
+                    ],
+                    routes: [
+                        [
+                            "Mom There's Pink in My Burger",
+                            "5.6",
+                            "~40 ft",
+                            "Walk-up slab top",
+                            "Scramble to top of Write-Off slab; build anchor and extend over the low-angle lip. Farthest-right route.",
+                        ],
+                        [
+                            "Knife in the Toaster",
+                            "5.9",
+                            "~50 ft",
+                            "Walk-up slab top",
+                            "Same top access; slab/friction with a vertical top-out. Center of wall.",
+                        ],
+                        [
+                            "Gritscone routes (4 bolts or less)",
+                            "5.5–5.9",
+                            "20–40 ft",
+                            "Tree above + bolts below lip",
+                            "Bolts sit below the rounded lip — rappel/rig from a large tree above and extend a static line over the edge to the route. Walk around to reach the top.",
+                        ],
+                    ],
+                    src: "Mountain Project (Deception Crags, Exit 38, Gritscone); WCC Exit 38; The Mountaineers; rakkup (Snoqualmie Rock).",
+                },
+                {
+                    id: "exit32",
+                    name: "Exit 32 — Repo I, British Aisles (Little Si)",
+                    drive: "~40 min from Seattle",
+                    rock: "Volcanic metamorphic; vertical to low-angle with intermittent cracks",
+                    season: "Apr–Dec (rain dependent)",
+                    grades: "Moderate face/crack",
+                    pass: "Discover Pass / parking per Little Si trailhead",
+                    center: [47.4905, -121.744],
+                    zoom: 14,
+                    topaccess:
+                        "At Repo I you 'walk up and around Repo II, step around a boulder and scramble down to the top of Repo I to set a top rope.' World Wall is NOT walkable from the top (rappel/lower only) and is excluded.",
+                    access: "High-use trail (Little Si is WA's busiest hike-adjacent crag corridor); no new route development. Keep groups small and gear off the trail.",
+                    verify: "Repo I scramble-down to the top is exposed — move carefully when stepping around the boulder.",
+                    waypoints: [
+                        {
+                            n: "Little Si trailhead / parking",
+                            c: [47.4889, -121.747],
+                            t: "park",
+                        },
+                        {
+                            n: "Little Si trail → British Aisles",
+                            c: [47.4905, -121.7448],
+                            t: "junction",
+                        },
+                        {
+                            n: "British Aisles / Repo area",
+                            c: [47.4912, -121.7432],
+                            t: "crag",
+                        },
+                        {
+                            n: "Repo I top (walk around Repo II, scramble down)",
+                            c: [47.4913, -121.743],
+                            t: "top",
+                        },
+                    ],
+                    track: [
+                        [47.4889, -121.747],
+                        [47.4905, -121.7448],
+                        [47.4912, -121.7432],
+                        [47.4913, -121.743],
+                    ],
+                    routes: [
+                        [
+                            "Repo I lines",
+                            "easy–moderate",
+                            "~30–40 ft",
+                            "Boulder/scramble top access",
+                            "Walk up and around Repo II, step around a boulder, and scramble down to the top of Repo I to rig. Vertical-to-low-angle rock with intermittent cracks — back up gear anchor and extend over the edge.",
+                        ],
+                    ],
+                    src: "Mountain Project (Exit 32/Little Si, World Wall, Repo I).",
+                },
+                {
+                    id: "erie",
+                    name: "Mount Erie — Powerline & Summit Walls (Anacortes)",
+                    drive: "~1.5 hr from Seattle",
+                    rock: "Featured feldspar/hornblende diorite (grippy, crimpy)",
+                    season: "Most of year; Powerline gets winter afternoon sun",
+                    grades: "5.5–5.13 (lots of 5.6–5.10)",
+                    pass: "No camping; summit parking may be patrolled",
+                    center: [48.4527, -122.6258],
+                    zoom: 14,
+                    topaccess:
+                        "Powerline: from the summit-area pullout, contour down grassy ledges/short rock steps through woods under the powerlines to the cliff top; anchors atop Tindall's Terror & Scarface, then walk NW to a LOW 3rd-class descent ramp. Powerline West anchors are ~20 ft below/W of the ramp (some rappel from trees). Summit Wall: 'just about anything can be top roped' — best rigged by rappelling off a top anchor.",
+                    access: "Some trail segments closed (private land): lower Sunrise/East Buttress, Trail 247, Pigeon Stool Wall.",
+                    verify: "Powerline West bolted anchors sit below the ramp; an exposed scramble or tree rappel is needed to drop a line — scout before committing.",
+                    waypoints: [
+                        {
+                            n: "Powerline pullout (~6 cars, 90°+ left turn before summit)",
+                            c: [48.454, -122.624],
+                            t: "park",
+                        },
+                        {
+                            n: "Sunshine/Sunset Trail W along grass ledges",
+                            c: [48.4536, -122.6252],
+                            t: "junction",
+                        },
+                        {
+                            n: "Cliff top above Lake Erie (Tindall's/Scarface anchors)",
+                            c: [48.4531, -122.6262],
+                            t: "top",
+                        },
+                        {
+                            n: "Low 3rd-class descent ramp (NW)",
+                            c: [48.4533, -122.6268],
+                            t: "junction",
+                        },
+                        {
+                            n: "Powerline Wall base",
+                            c: [48.4528, -122.6266],
+                            t: "crag",
+                        },
+                    ],
+                    track: [
+                        [48.454, -122.624],
+                        [48.4536, -122.6252],
+                        [48.4531, -122.6262],
+                        [48.4533, -122.6268],
+                        [48.4528, -122.6266],
+                    ],
+                    routes: [
+                        [
+                            "False Impressions",
+                            "5.8",
+                            "~60 ft",
+                            "Bolted anchor on top",
+                            "First bolted line reached after descending the ramp. Bolted anchors at top; extend over the edge. Good beginner-lead/TR line.",
+                        ],
+                        [
+                            "Lasting Impressions",
+                            "5.9+",
+                            "~60 ft",
+                            "Bolted anchor (shared)",
+                            "Top-ropeable from the False Impressions anchor — extend/redirect as needed.",
+                        ],
+                        [
+                            "Intimidator / Lethal Weapon",
+                            "5.7–5.10",
+                            "~60 ft",
+                            "Bolted anchors on top",
+                            "Lower-tier Powerline West routes; bolted anchors. Reach the top via the ramp then rig and extend.",
+                        ],
+                        [
+                            "Tindall's Terror / Scarface",
+                            "mod sport/trad",
+                            "~50–60 ft",
+                            "Anchors at clifftop",
+                            "Anchors found directly at the top of the cliff where you arrive via the Sunshine Trail — rig here, then walk NW to the ramp.",
+                        ],
+                        [
+                            "Summit Wall routes",
+                            "5.easy–5.10",
+                            "short",
+                            "Top anchors / rappel-in",
+                            "Almost anything on the Summit Wall can be top roped; rappel off a top anchor to set up. Short, accessible, beginner-friendly.",
+                        ],
+                    ],
+                    src: "Mountain Project (Mount Erie, Powerline Wall/Area); SummitPost; WTA; Dallas Kloke 'Rockin' on the Rock.'",
+                },
+                {
+                    id: "tieton",
+                    name: "Tieton — Royal Columns (Oak Creek, near Naches)",
+                    drive: "~3 hr from Seattle",
+                    rock: "Columnar andesite/basalt; rough, horizontal edges; ~70–90 ft",
+                    season: "Spring & fall; raptor closure ~Feb 1–Apr 1 (sometimes later)",
+                    grades: "5.4–5.10+ (great moderate cracks)",
+                    pass: "Discover Pass at Oak Creek Wildlife Area lot",
+                    center: [46.7251, -120.8094],
+                    zoom: 15,
+                    topaccess:
+                        "Approach trail ascends the hillside and reaches the wall near Orange Sunshine; slopes above are walkable (loose rock present). The EXACT walk-up onto the column tops is NOT documented publicly — sources discourage scrambling 'straight up.' Scout in person.",
+                    access: "Raptor closures Feb–Apr (later if active nest). A basalt column detached Apr 28, 2017 (WDFW closed cliffs; 'Price of Complacency' & 'Stress Management' no longer exist). Watch for rattlesnakes/wasps.",
+                    verify: "Clifftop walk-up unconfirmed; vet any block/horn anchor carefully given column-collapse history. Rough rock abrades rope — pad and extend over the lip.",
+                    waypoints: [
+                        {
+                            n: "Oak Creek Wildlife Area lot (inferred ~)",
+                            c: [46.727, -120.809],
+                            t: "park",
+                        },
+                        {
+                            n: "Tieton River footbridge → gated fence (R) → Nature Trail",
+                            c: [46.7262, -120.8092],
+                            t: "junction",
+                        },
+                        {
+                            n: "Crag trail branches left up hillside",
+                            c: [46.7255, -120.8095],
+                            t: "junction",
+                        },
+                        {
+                            n: "Royal Columns base (near Orange Sunshine)",
+                            c: [46.7251, -120.8094],
+                            t: "crag",
+                        },
+                        {
+                            n: "Column tops (walk-up UNCONFIRMED — scout)",
+                            c: [46.725, -120.8092],
+                            t: "top",
+                        },
+                    ],
+                    track: [
+                        [46.727, -120.809],
+                        [46.7262, -120.8092],
+                        [46.7255, -120.8095],
+                        [46.7251, -120.8094],
+                        [46.725, -120.8092],
+                    ],
+                    routes: [
+                        [
+                            "Mush Maker",
+                            "5.7+",
+                            "~80 ft",
+                            "Two-bolt anchor on top",
+                            'Two-bolt anchor; gear to 3". Reach column top, clip/extend the bolts over the rough lip with a static line.',
+                        ],
+                        [
+                            "First Blood",
+                            "5.8+",
+                            "~70 ft",
+                            "Bolt anchor (shares Mush Maker)",
+                            "Uses Mush Maker's bolts. 3rd-class ledges at the base. Extend over the edge.",
+                        ],
+                        [
+                            "Inca Roads",
+                            "5.9",
+                            "~80 ft",
+                            "Two-bolt anchor on top",
+                            'Classic hands-fingers crack; two-bolt anchor, gear to 3.5". Pad/extend the lip.',
+                        ],
+                        [
+                            "The Cutting Edge",
+                            "5.7",
+                            "~70 ft",
+                            "Two-bolt anchor on top",
+                            'Crack-in-corner; pro to 3", two-bolt anchor.',
+                        ],
+                        [
+                            "Cactus Love",
+                            "5.9",
+                            "~80 ft",
+                            "Bolted anchors (top & left)",
+                            "Belay bolts ~12 ft above the crux; bolted anchors at top and to the left.",
+                        ],
+                        [
+                            "Orange Sunshine",
+                            "5.10b",
+                            "~80 ft",
+                            "Fixed anchor on top",
+                            'Best route at the crag; reach the fixed anchor after the 5.10b fingers. Gear to 2".',
+                        ],
+                        [
+                            "X-Factor",
+                            "5.8",
+                            "~70 ft",
+                            "GEAR anchor (no top bolts)",
+                            'NO bolts directly on top — build a gear anchor in horizontal cracks; bolts sit ~20 ft to the right. Cams to ~3-4", nuts.',
+                        ],
+                        [
+                            "Good Timer",
+                            "5.4",
+                            "~70 ft",
+                            "GEAR anchor / boulder",
+                            "No bolts directly atop the route; a boulder with a high horizontal crack tops it (#2/#3 cams, large nut). Bolts set off to the right — redirect or build gear.",
+                        ],
+                    ],
+                    src: "Mountain Project (Royal Columns + route pages); SummitPost; The Mountaineers; WCC Tieton; Spokesman-Review/Yakima Herald (2017 collapse).",
+                },
+                {
+                    id: "minne",
+                    name: "Minnehaha / John H. Shields Park (Spokane)",
+                    drive: "Local Spokane crag (~4.5 hr from Seattle)",
+                    rock: "Selkirk granite; featured; 20–80 ft",
+                    season: "Year-round",
+                    grades: "5.4–easy 5.12; 71 routes, all top-ropeable",
+                    pass: "Spokane County Park; no noted access concerns",
+                    center: [47.6905, -117.337],
+                    zoom: 15,
+                    topaccess:
+                        "'Easy walk off' to the top of the Main Wall, ~50–60 paces from the lot. Most routes have NO bolts on the face — chains/gear at the top.",
+                    access: "Popular with hikers/bikers; gun-range noise from across the river. Be tidy and share the crag.",
+                    verify: "Confirm chain vs. gear anchor per route; bring webbing/cordelette for natural anchors.",
+                    waypoints: [
+                        {
+                            n: "Shields Park lot (E Upriver Dr)",
+                            c: [47.69, -117.3378],
+                            t: "park",
+                        },
+                        {
+                            n: "Main Wall base (faces river)",
+                            c: [47.6905, -117.3372],
+                            t: "crag",
+                        },
+                        {
+                            n: "Main Wall top (easy walk-off)",
+                            c: [47.6907, -117.337],
+                            t: "top",
+                        },
+                    ],
+                    track: [
+                        [47.69, -117.3378],
+                        [47.6905, -117.3372],
+                        [47.6907, -117.337],
+                    ],
+                    routes: [
+                        [
+                            "The Dihedral",
+                            "5.8",
+                            "~60 ft",
+                            "2-bolt anchor on top",
+                            'Obvious left-facing corner, center of Main Wall. Easy walk-off; 2-bolt anchor on top — bring webbing to toprope. Stoppers/cams to 2" if backing up.',
+                        ],
+                        [
+                            "The Diagonal",
+                            "5.8",
+                            "~70 ft",
+                            "Gear/chain on top",
+                            "Central classic, ~60 paces from the lot; usually top-roped. Build gear anchor / use chains; walk off to set up.",
+                        ],
+                        [
+                            "Other Main Wall routes",
+                            "5.4–5.12",
+                            "20–80 ft",
+                            "Chains + gear",
+                            "All routes top-ropeable via the easy walk-off; many need gear (few continuous cracks) plus chains. Extend over the granite lip.",
+                        ],
+                    ],
+                    src: "Mountain Project (Minnehaha, The Dihedral); WCC Minnehaha; Spokesman-Review; Marty Bland 'Inland Northwest Rock Climbs.'",
+                },
+                {
+                    id: "larrabee",
+                    name: "Larrabee — Boat Launch Wall (Chuckanut, Bellingham)",
+                    drive: "~1.5 hr from Seattle",
+                    rock: "Soft Chuckanut sandstone; rounded, wave-sculpted edges; ~100 ft",
+                    season: "Tide-dependent; dry, never within a day of rain",
+                    grades: "Mostly 5.7–5.9 TR",
+                    pass: "Discover Pass; WA's first state park (est. 1915)",
+                    center: [48.6515, -122.496],
+                    zoom: 15,
+                    topaccess:
+                        "From the boat-launch lot, the trail up the LEFT side of the slab reaches the cliff top directly; follow the beach to the base. Base accessible ONLY at low tide.",
+                    access: "Fragile sandstone — do not climb wet or within a day of rain. Tide table mandatory (minus tide best). BNSF mainline runs the shoreline; do not cross tracks unsafely.",
+                    verify: "No bolted top anchors documented — build gear/tree anchors well back and use a LONG static extension to keep rope off the rounded, abrasive sandstone lip. Pad the edge.",
+                    waypoints: [
+                        {
+                            n: "Larrabee boat-launch lot (off Cove Rd)",
+                            c: [48.652, -122.4948],
+                            t: "park",
+                        },
+                        {
+                            n: "Trail up LEFT side of slab",
+                            c: [48.6516, -122.4956],
+                            t: "junction",
+                        },
+                        {
+                            n: "Cliff top (rig anchors)",
+                            c: [48.6513, -122.4962],
+                            t: "top",
+                        },
+                        {
+                            n: "Wall base via beach (low tide only)",
+                            c: [48.6511, -122.4965],
+                            t: "crag",
+                        },
+                    ],
+                    track: [
+                        [48.652, -122.4948],
+                        [48.6516, -122.4956],
+                        [48.6513, -122.4962],
+                        [48.6511, -122.4965],
+                    ],
+                    routes: [
+                        [
+                            "Boat Launch Wall TR lines",
+                            "5.7–5.9",
+                            "~100 ft",
+                            "Gear/tree anchor + static extension",
+                            "Highest cliff in the park. No bolted top anchors — build gear or sling trees set well back, then run a long static line over the rounded, soft lip and pad the edge heavily. Base only reachable at low tide; never climb wet sandstone.",
+                        ],
+                    ],
+                    src: "The Mountaineers (Boat Launch Wall, Clayton Beach); WCC Larrabee; Washington State Parks; HistoryLink (1915).",
+                },
+            ];
+
+            /* ---------- RENDER ---------- */
+            const wrap = document.getElementById("crags");
+            const icons = {
+                park: "#5fd38d",
+                junction: "#ffb454",
+                crag: "#4ea1ff",
+                top: "#ff6b6b",
+            };
+            function dot(color) {
+                return L.divIcon({
+                    className: "",
+                    html:
+                        '<div style="width:14px;height:14px;border-radius:50%;background:' +
+                        color +
+                        ';border:2px solid #0d0f12;box-shadow:0 0 3px #000"></div>',
+                    iconSize: [14, 14],
+                    iconAnchor: [7, 7],
+                });
+            }
+
+            CRAGS.forEach((cr) => {
+                const el = document.createElement("div");
+                el.className = "crag";
+                el.id = cr.id;
+                let rows = cr.routes
+                    .map(
+                        (r) =>
+                            `<tr><td><b>${r[0]}</b></td><td class="g">${r[1]}</td><td class="g">${r[2]}</td><td>${r[3]}</td><td>${r[4]}</td></tr>`,
+                    )
+                    .join("");
+                let wpts = cr.waypoints
+                    .map(
+                        (w) =>
+                            `<li class="src">${w.n} — <span class="g">${w.c[0].toFixed(4)}, ${w.c[1].toFixed(4)}</span></li>`,
+                    )
+                    .join("");
+                el.innerHTML = `
+    <h3>${cr.name}</h3>
+    <div class="meta">
+      <span class="chip"><b>Drive:</b> ${cr.drive}</span>
+      <span class="chip"><b>Rock:</b> ${cr.rock}</span>
+      <span class="chip"><b>Season:</b> ${cr.season}</span>
+      <span class="chip"><b>Grades:</b> ${cr.grades}</span>
+      <span class="chip"><b>Pass:</b> ${cr.pass}</span>
+    </div>
+    <h4>Top access</h4><p class="note">${cr.topaccess}</p>
+    <div class="access"><b>Closures / access:</b> ${cr.access}</div>
+    ${cr.verify ? `<div class="verify"><b>Field-verify:</b> ${cr.verify}</div>` : ""}
+    <div class="map" id="map-${cr.id}"></div>
+    <button class="btn" data-gpx="${cr.id}">⬇ Download GPX</button>
+    <h4>Routes / sectors & TR-solo anchor setup</h4>
+    <table><thead><tr><th>Route</th><th>Grade</th><th>Length</th><th>Anchor</th><th>How to rig from above</th></tr></thead><tbody>${rows}</tbody></table>
+    <details><summary>Waypoints (approximate)</summary><ul>${wpts}</ul></details>
+    <p class="src"><b>Sources:</b> ${cr.src}</p>`;
+                wrap.appendChild(el);
+            });
+
+            /* init maps after DOM insert */
+            CRAGS.forEach((cr) => {
+                const map = L.map("map-" + cr.id, {
+                    scrollWheelZoom: false,
+                }).setView(cr.center, cr.zoom);
+                L.tileLayer(
+                    "https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png",
+                    {
+                        maxZoom: 17,
+                        attribution:
+                            "© OpenTopoMap (CC-BY-SA), © OpenStreetMap contributors",
+                    },
+                ).addTo(map);
+                if (cr.track && cr.track.length > 1) {
+                    L.polyline(cr.track, {
+                        color: "#4ea1ff",
+                        weight: 4,
+                        opacity: 0.85,
+                        dashArray: "1,0",
+                    }).addTo(map);
+                }
+                cr.waypoints.forEach((w) => {
+                    L.marker(w.c, { icon: dot(icons[w.t] || "#4ea1ff") })
+                        .addTo(map)
+                        .bindPopup(
+                            "<b>" +
+                                w.n +
+                                "</b><br>" +
+                                w.c[0].toFixed(5) +
+                                ", " +
+                                w.c[1].toFixed(5),
+                        );
+                });
+                setTimeout(() => map.invalidateSize(), 200);
+            });
+
+            /* ---------- GPX EXPORT (client-side Blob) ---------- */
+            function buildGPX(cr) {
+                const esc = (s) =>
+                    String(s)
+                        .replace(/&/g, "&amp;")
+                        .replace(/</g, "&lt;")
+                        .replace(/>/g, "&gt;");
+                let g = '<?xml version="1.0" encoding="UTF-8"?>\n';
+                g +=
+                    '<gpx version="1.1" creator="WA TR-Solo Atlas" xmlns="http://www.topografix.com/GPX/1/1">\n';
+                g += "<metadata><name>" + esc(cr.name) + "</name>";
+                g +=
+                    "<desc>Approximate approach beta from public sources. Verify in the field.</desc></metadata>\n";
+                cr.waypoints.forEach((w) => {
+                    g +=
+                        '<wpt lat="' +
+                        w.c[0] +
+                        '" lon="' +
+                        w.c[1] +
+                        '"><name>' +
+                        esc(w.n) +
+                        "</name><sym>Flag</sym></wpt>\n";
+                });
+                if (cr.track && cr.track.length) {
+                    g +=
+                        "<trk><name>" +
+                        esc(cr.name) +
+                        " approach</name><trkseg>\n";
+                    cr.track.forEach((p) => {
+                        g +=
+                            '<trkpt lat="' +
+                            p[0] +
+                            '" lon="' +
+                            p[1] +
+                            '"></trkpt>\n';
+                    });
+                    g += "</trkseg></trk>\n";
+                }
+                g += "</gpx>\n";
+                return g;
+            }
+            document.addEventListener("click", (e) => {
+                const id =
+                    e.target &&
+                    e.target.getAttribute &&
+                    e.target.getAttribute("data-gpx");
+                if (!id) return;
+                const cr = CRAGS.find((c) => c.id === id);
+                const blob = new Blob([buildGPX(cr)], {
+                    type: "application/gpx+xml",
+                });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement("a");
+                a.href = url;
+                a.download = cr.id + "-approach.gpx";
+                document.body.appendChild(a);
+                a.click();
+                setTimeout(() => {
+                    URL.revokeObjectURL(url);
+                    a.remove();
+                }, 500);
+            });
+        </script>
+    </body>
+</html>
