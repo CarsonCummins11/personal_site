@@ -25,12 +25,18 @@ locals {
   build_dir        = "${path.module}/.build/package"
   requirements_src = "${path.module}/../requirements.txt"
   lambda_src       = "${path.module}/../lambda_function.py"
+  editor_html      = "${path.module}/../editor.html"
+  editor_css       = "${path.module}/../editor.css"
+  editor_js        = "${path.module}/../editor.js"
 }
 
 resource "null_resource" "bundle" {
   triggers = {
     requirements_hash = filemd5(local.requirements_src)
     lambda_hash       = filemd5(local.lambda_src)
+    html_hash         = filemd5(local.editor_html)
+    css_hash          = filemd5(local.editor_css)
+    js_hash           = filemd5(local.editor_js)
   }
 
   provisioner "local-exec" {
@@ -44,6 +50,9 @@ resource "null_resource" "bundle" {
         --python-platform x86_64-unknown-linux-gnu \
         --only-binary :all:
       cp '${local.lambda_src}' '${local.build_dir}/'
+      cp '${local.editor_html}' '${local.build_dir}/'
+      cp '${local.editor_css}' '${local.build_dir}/'
+      cp '${local.editor_js}' '${local.build_dir}/'
     EOT
   }
 }

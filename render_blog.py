@@ -11,13 +11,13 @@ try:
         "https://www.mountainproject.com/user/201537333/carson-cummins/tick-export"
     ) as resp:
         ticks = list(csv.DictReader(io.StringIO(resp.read().decode("utf-8"))))
-    with open("ticks.json", "w") as f:
+    with open("docs/ticks.json", "w") as f:
         json.dump(ticks, f)
     print(f"Fetched {len(ticks)} ticks")
 except Exception as e:
     print(f"Could not fetch ticks: {e}")
 
-with open("blog_metadata.json") as f:
+with open("docs/blog_metadata.json") as f:
     blog_metadata = json.load(f)
 blog_folders = os.listdir("blog_posts")
 folder_to_titles = {}
@@ -48,14 +48,15 @@ for folder in blog_folders:
     if folder not in folder_to_titles or len(sys.argv) > 0:
         print(f"re-rendering {folder}")
 
+        os.makedirs(f"docs/blog_posts/{folder}", exist_ok=True)
         os.system(
             f"pandoc ./blog_posts/{folder}/source.md "
-            f"-o blog_posts/{folder}/post.html "
+            f"-o docs/blog_posts/{folder}/post.html "
             f'--metadata title="{title}" '
             f'--metadata date="{date}" '
             f"--template=blog_template.html "
             f"--standalone "
             f"--css=../../blog_style.css"
         )
-with open("blog_metadata.json", "w") as f:
+with open("docs/blog_metadata.json", "w") as f:
     json.dump(revised_blog_metadata, f)

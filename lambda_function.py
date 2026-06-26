@@ -12,6 +12,7 @@ Commits source.md + blog_metadata.json to GitHub; a GitHub Actions workflow
 """
 
 import base64
+import email
 import json
 import os
 import re
@@ -24,218 +25,67 @@ GITHUB_TOKEN = os.environ["GITHUB_TOKEN"]
 REPO_OWNER = os.environ.get("REPO_OWNER", "CarsonCummins11")
 REPO_NAME = os.environ.get("REPO_NAME", "personal_site")
 
-# Initialised once per container so warm invocations reuse the session.
 _repo = Github(GITHUB_TOKEN).get_repo(f"{REPO_OWNER}/{REPO_NAME}")
 
 # ---------------------------------------------------------------------------
-# HTML editor page
+# Static assets — loaded once at cold start
 # ---------------------------------------------------------------------------
 
-EDITOR_HTML = """\
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>New Blog Post</title>
-<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-<style>
-  *, *::before, *::after { box-sizing: border-box; }
-  body {
-    margin: 0;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-    background: #f5f5f5;
-    color: #1a1a1a;
-  }
-  header {
-    background: #1a1a1a;
-    color: #f5f5f5;
-    padding: 0.75rem 1.5rem;
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-  }
-  header h1 { margin: 0; font-size: 1rem; font-weight: 600; letter-spacing: 0.05em; }
-  .container { max-width: 1200px; margin: 0 auto; padding: 1.5rem; }
-  .fields {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    gap: 1rem;
-    margin-bottom: 1rem;
-  }
-  .field { display: flex; flex-direction: column; gap: 0.3rem; }
-  label { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; color: #666; }
-  input[type=text], input[type=date], input[type=password] {
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    padding: 0.5rem 0.75rem;
-    font-size: 0.95rem;
-    width: 100%;
-    background: #fff;
-  }
-  input:focus { outline: none; border-color: #1a1a1a; }
-  .editor-panes {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1rem;
-    height: 60vh;
-  }
-  .pane-label {
-    font-size: 0.7rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    color: #999;
-    margin-bottom: 0.25rem;
-  }
-  textarea {
-    width: 100%;
-    height: 100%;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    padding: 0.75rem;
-    font-family: "SF Mono", "Fira Code", monospace;
-    font-size: 0.85rem;
-    line-height: 1.6;
-    resize: none;
-    background: #fff;
-  }
-  textarea:focus { outline: none; border-color: #1a1a1a; }
-  .preview {
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    padding: 0.75rem 1.25rem;
-    overflow-y: auto;
-    background: #fff;
-    font-size: 0.95rem;
-    line-height: 1.7;
-    height: 100%;
-  }
-  .preview img { max-width: 100%; }
-  .actions { margin-top: 1rem; display: flex; gap: 0.75rem; align-items: center; }
-  button[type=submit] {
-    background: #1a1a1a;
-    color: #fff;
-    border: none;
-    padding: 0.6rem 1.5rem;
-    font-size: 0.95rem;
-    border-radius: 4px;
-    cursor: pointer;
-  }
-  button[type=submit]:hover { background: #333; }
-  button[type=submit]:disabled { background: #999; cursor: not-allowed; }
-  .status { font-size: 0.85rem; color: #666; }
-  .status.error { color: #c0392b; }
-  .status.ok { color: #27ae60; }
-  .hint { font-size: 0.75rem; color: #999; margin-top: 0.2rem; }
-</style>
-</head>
-<body>
-<header><h1>Blog Post Editor</h1></header>
-<div class="container">
-  <form id="post-form">
-    <div class="fields">
-      <div class="field">
-        <label for="title">Title</label>
-        <input type="text" id="title" name="title" placeholder="My Adventure Post" required>
-      </div>
-      <div class="field">
-        <label for="slug">Folder slug</label>
-        <input type="text" id="slug" name="slug" placeholder="adventure_jun19" required>
-        <span class="hint">blog_posts/<span id="slug-preview">…</span>/source.md</span>
-      </div>
-      <div class="field">
-        <label for="date">Date</label>
-        <input type="date" id="date" name="date" required>
-      </div>
-    </div>
-    __TOKEN_FIELD__
-    <div class="editor-panes">
-      <div>
-        <div class="pane-label">Markdown</div>
-        <textarea id="md" name="markdown" placeholder="Write your post in Markdown…" required></textarea>
-      </div>
-      <div>
-        <div class="pane-label">Preview</div>
-        <div class="preview" id="preview"></div>
-      </div>
-    </div>
-    <div class="actions">
-      <button type="submit" id="submit-btn">Publish</button>
-      <span class="status" id="status"></span>
-    </div>
-  </form>
-</div>
-<script>
-  const d = new Date();
-  document.getElementById('date').value = d.toISOString().slice(0,10);
+_HERE = os.path.dirname(os.path.abspath(__file__))
 
-  document.getElementById('slug').addEventListener('input', e => {
-    document.getElementById('slug-preview').textContent = e.target.value || '…';
-  });
-
-  const md = document.getElementById('md');
-  const preview = document.getElementById('preview');
-  md.addEventListener('input', () => { preview.innerHTML = marked.parse(md.value); });
-
-  document.getElementById('post-form').addEventListener('submit', async e => {
-    e.preventDefault();
-    const btn = document.getElementById('submit-btn');
-    const status = document.getElementById('status');
-    btn.disabled = true;
-    status.className = 'status';
-    status.textContent = 'Publishing…';
-
-    const form = new FormData(e.target);
-    const raw = form.get('date');
-    const [y,m,day] = raw.split('-');
-    form.set('date', m+'/'+day+'/'+y);
-
-    try {
-      const resp = await fetch(window.location.pathname, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: new URLSearchParams(form),
-      });
-      const text = await resp.text();
-      if (resp.ok) {
-        status.className = 'status ok';
-        status.textContent = text;
-        e.target.reset();
-        document.getElementById('date').value = new Date().toISOString().slice(0,10);
-        preview.innerHTML = '';
-        document.getElementById('slug-preview').textContent = '…';
-      } else {
-        status.className = 'status error';
-        status.textContent = 'Error: ' + text;
-      }
-    } catch (err) {
-      status.className = 'status error';
-      status.textContent = 'Network error: ' + err.message;
-    } finally {
-      btn.disabled = false;
-    }
-  });
-</script>
-</body>
-</html>
-"""
-
-def _build_editor() -> str:
-    return EDITOR_HTML.replace("__TOKEN_FIELD__", "")
-
+with open(os.path.join(_HERE, "editor.html")) as f:
+    _EDITOR_HTML = f.read()
+with open(os.path.join(_HERE, "editor.css")) as f:
+    _EDITOR_CSS = f.read()
+with open(os.path.join(_HERE, "editor.js")) as f:
+    _EDITOR_JS = f.read()
 
 # ---------------------------------------------------------------------------
 # Request parsing
 # ---------------------------------------------------------------------------
 
-def _parse_body(event: dict) -> dict:
+def _parse_multipart(body_bytes: bytes, content_type: str):
+    """Parse multipart/form-data. Returns (fields: dict, files: list of (filename, bytes))."""
+    raw = b"Content-Type: " + content_type.encode() + b"\r\n\r\n" + body_bytes
+    msg = email.message_from_bytes(raw)
+    fields: dict = {}
+    files: list = []
+    payload = msg.get_payload()
+    if not isinstance(payload, list):
+        return fields, files
+    for part in payload:
+        cd = part.get("Content-Disposition", "")
+        name = None
+        filename = None
+        for token in cd.split(";"):
+            token = token.strip()
+            if token.lower().startswith("name="):
+                name = token[5:].strip('"')
+            elif token.lower().startswith("filename="):
+                filename = token[9:].strip('"')
+        if not name:
+            continue
+        data = part.get_payload(decode=True) or b""
+        if filename:
+            files.append((filename, data))
+        else:
+            fields[name] = data.decode("utf-8")
+    return fields, files
+
+
+def _parse_body(event: dict):
+    """Returns (fields: dict, files: list of (filename, bytes))."""
     body = event.get("body") or ""
     if event.get("isBase64Encoded"):
-        body = base64.b64decode(body).decode()
+        body_bytes = base64.b64decode(body)
+    else:
+        body_bytes = body.encode() if isinstance(body, str) else body
     ct = (event.get("headers") or {}).get("content-type", "")
     if "application/json" in ct:
-        return json.loads(body) if body else {}
-    return dict(urllib.parse.parse_qsl(body))
+        return (json.loads(body_bytes.decode()) if body_bytes else {}), []
+    if "multipart/form-data" in ct:
+        return _parse_multipart(body_bytes, ct)
+    return dict(urllib.parse.parse_qsl(body_bytes.decode())), []
 
 
 def _response(status: int, body: str, content_type="text/plain"):
@@ -244,6 +94,56 @@ def _response(status: int, body: str, content_type="text/plain"):
         "headers": {"Content-Type": content_type},
         "body": body,
     }
+
+
+# ---------------------------------------------------------------------------
+# GET sub-handlers
+# ---------------------------------------------------------------------------
+
+_IMAGE_EXTS = {".jpg", ".jpeg", ".png", ".gif", ".webp", ".avif", ".svg"}
+
+
+def _handle_list() -> dict:
+    try:
+        f = _repo.get_contents("docs/blog_metadata.json")
+        return _response(200, f.decoded_content.decode(), "application/json")
+    except Exception as e:
+        return _response(500, str(e))
+
+
+def _handle_load(slug: str) -> dict:
+    if not slug:
+        return _response(400, "slug is required")
+    slug = re.sub(r"[^a-z0-9_-]", "_", slug.lower())
+    try:
+        md_file = _repo.get_contents(f"blog_posts/{slug}/source.md")
+        markdown = md_file.decoded_content.decode("utf-8")
+
+        meta_raw = _repo.get_contents("docs/blog_metadata.json")
+        meta = json.loads(meta_raw.decoded_content)
+        post_meta = next((p for p in meta if p["folder"] == slug), {})
+
+        try:
+            contents = _repo.get_contents(f"docs/blog_posts/{slug}")
+            images = [
+                {"name": c.name, "url": c.download_url}
+                for c in contents
+                if c.type == "file"
+                and os.path.splitext(c.name)[1].lower() in _IMAGE_EXTS
+            ]
+        except Exception:
+            images = []
+
+        return _response(200, json.dumps({
+            "title": post_meta.get("title", ""),
+            "date": post_meta.get("published_date", ""),
+            "markdown": markdown,
+            "images": images,
+        }), "application/json")
+    except UnknownObjectException:
+        return _response(404, f"Post '{slug}' not found")
+    except Exception as e:
+        return _response(500, str(e))
 
 
 # ---------------------------------------------------------------------------
@@ -257,12 +157,23 @@ def handler(event, context):
     )
 
     if method == "GET":
-        return _response(200, _build_editor(), "text/html")
+        path = event.get("rawPath", "/")
+        if path == "/editor.css":
+            return _response(200, _EDITOR_CSS, "text/css")
+        if path == "/editor.js":
+            return _response(200, _EDITOR_JS, "application/javascript")
+        qs = event.get("queryStringParameters") or {}
+        action = qs.get("action", "")
+        if action == "list":
+            return _handle_list()
+        if action == "load":
+            return _handle_load(qs.get("slug", ""))
+        return _response(200, _EDITOR_HTML, "text/html")
 
     if method != "POST":
         return _response(405, "Method Not Allowed")
 
-    data = _parse_body(event)
+    data, image_files = _parse_body(event)
 
     title = data.get("title", "").strip()
     slug = data.get("slug", "").strip()
@@ -273,35 +184,98 @@ def handler(event, context):
         return _response(400, "title, slug, and markdown are required")
 
     slug = re.sub(r"[^a-z0-9_-]", "_", slug.lower())
+    is_edit = data.get("edit") == "true"
 
     try:
-        # Reject duplicate slugs
-        try:
-            _repo.get_contents(f"blog_posts/{slug}")
-            return _response(409, f"A post with slug '{slug}' already exists")
-        except UnknownObjectException:
-            pass
+        if is_edit:
+            # ---- Update existing post ----
+            try:
+                src_file = _repo.get_contents(f"blog_posts/{slug}/source.md")
+            except UnknownObjectException:
+                return _response(404, f"Post '{slug}' not found")
 
-        # Commit metadata FIRST so render_blog.py never hits the input() branch
-        # when the workflow fires on the source.md push.
-        meta_file = _repo.get_contents("blog_metadata.json")
-        meta = json.loads(meta_file.decoded_content)
-        meta.append({"title": title, "folder": slug, "published_date": date})
-        _repo.update_file(
-            "blog_metadata.json",
-            f"update metadata for: {title}",
-            json.dumps(meta, indent=2),
-            meta_file.sha,
-        )
+            meta_file = _repo.get_contents("docs/blog_metadata.json")
+            meta = json.loads(meta_file.decoded_content)
+            updated = False
+            for i, p in enumerate(meta):
+                if p["folder"] == slug:
+                    meta[i] = {"title": title, "folder": slug, "published_date": date}
+                    updated = True
+                    break
+            if not updated:
+                meta.append({"title": title, "folder": slug, "published_date": date})
+            _repo.update_file(
+                "docs/blog_metadata.json",
+                f"update metadata for: {title}",
+                json.dumps(meta, indent=2),
+                meta_file.sha,
+            )
 
-        # Commit source.md — this push triggers the render workflow.
-        _repo.create_file(
-            f"blog_posts/{slug}/source.md",
-            f"add blog post: {title}",
-            markdown,
-        )
+            for filename, img_bytes in image_files:
+                safe_name = re.sub(r"[^a-zA-Z0-9._-]", "_", filename)
+                try:
+                    existing = _repo.get_contents(f"docs/blog_posts/{slug}/{safe_name}")
+                    _repo.update_file(
+                        f"docs/blog_posts/{slug}/{safe_name}",
+                        f"update image {safe_name} for: {title}",
+                        img_bytes,
+                        existing.sha,
+                    )
+                except UnknownObjectException:
+                    _repo.create_file(
+                        f"docs/blog_posts/{slug}/{safe_name}",
+                        f"add image {safe_name} for: {title}",
+                        img_bytes,
+                    )
 
-        return _response(200, f'Post "{title}" published — GitHub Actions will render the HTML.')
+            # Update source.md — triggers the render workflow
+            _repo.update_file(
+                f"blog_posts/{slug}/source.md",
+                f"update blog post: {title}",
+                markdown,
+                src_file.sha,
+            )
+
+            return _response(200, f'Post "{title}" updated — GitHub Actions will render the HTML.')
+
+        else:
+            # ---- Create new post ----
+            try:
+                _repo.get_contents(f"blog_posts/{slug}")
+                return _response(409, f"A post with slug '{slug}' already exists")
+            except UnknownObjectException:
+                pass
+
+            # Commit metadata FIRST so render_blog.py never hits the input() branch
+            # when the workflow fires on the source.md push.
+            meta_file = _repo.get_contents("docs/blog_metadata.json")
+            meta = json.loads(meta_file.decoded_content)
+            meta.append({"title": title, "folder": slug, "published_date": date})
+            _repo.update_file(
+                "docs/blog_metadata.json",
+                f"update metadata for: {title}",
+                json.dumps(meta, indent=2),
+                meta_file.sha,
+            )
+
+            # Commit image files before source.md so they're present when the
+            # render workflow fires on the source.md push.
+            for filename, img_bytes in image_files:
+                safe_name = re.sub(r"[^a-zA-Z0-9._-]", "_", filename)
+                _repo.create_file(
+                    f"docs/blog_posts/{slug}/{safe_name}",
+                    f"add image {safe_name} for: {title}",
+                    img_bytes,
+                )
+
+            # Commit source.md — this push triggers the render workflow.
+            _repo.create_file(
+                f"blog_posts/{slug}/source.md",
+                f"add blog post: {title}",
+                markdown,
+            )
+
+            return _response(200, f'Post "{title}" published — GitHub Actions will render the HTML.')
 
     except GithubException as e:
         return _response(502, f"GitHub error {e.status}: {e.data.get('message', str(e))}")
