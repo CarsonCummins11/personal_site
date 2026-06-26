@@ -37,14 +37,12 @@ resource "null_resource" "bundle" {
     command = <<-EOT
       rm -rf '${local.build_dir}'
       mkdir -p '${local.build_dir}'
-      pip install \
+      uv pip install \
         --requirement '${local.requirements_src}' \
         --target '${local.build_dir}' \
-        --platform manylinux2014_x86_64 \
-        --only-binary :all: \
         --python-version 3.12 \
-        --implementation cp \
-        --quiet
+        --python-platform x86_64-unknown-linux-gnu \
+        --only-binary :all:
       cp '${local.lambda_src}' '${local.build_dir}/'
     EOT
   }
@@ -103,4 +101,19 @@ resource "aws_lambda_function" "blog_editor" {
 resource "aws_lambda_function_url" "blog_editor" {
   function_name      = aws_lambda_function.blog_editor.function_name
   authorization_type = "NONE"
+}
+
+resource "aws_lambda_permission" "public_url" {
+  statement_id           = "FunctionURLAllowPublicAccess"
+  action                 = "lambda:InvokeFunctionUrl"
+  function_name          = aws_lambda_function.blog_editor.function_name
+  principal              = "*"
+  function_url_auth_type = "NONE"
+}
+
+resource "aws_lambda_permission" "invoke" {
+  statement_id  = "AllowPublicInvoke"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.blog_editor.function_name
+  principal     = "*"
 }

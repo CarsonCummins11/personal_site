@@ -1,4 +1,4 @@
-Recently I did two routes, both of which are quite easy, but I thought I'd write a little bit about doing them. On Thursday after work I ran 4 miles, climbed poppy's peril, a 5 pitch 5.7+ slab route in the middle fork valley. 
+Recently I did two routes, both of which are more calm, but I thought I'd write a little bit about doing them. On Thursday after work I ran 4 miles, climbed poppy's peril, a 5 pitch 5.7+ slab route in the middle fork valley. 
 
 ![Starting up Poppy's Peril](base_of_climb.jpeg)
 

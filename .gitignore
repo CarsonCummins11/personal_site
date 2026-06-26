@@ -1,0 +1,22 @@
+# Terraform state and local data
+terraform/.terraform/
+terraform/.terraform.lock.hcl
+terraform/.build/
+terraform/*.tfstate
+terraform/*.tfstate.backup
+terraform/*.tfvars
+
+# Generic secret/credential files
+.env
+.env.*
+*.pem
+*.key
+*.p12
+*.pfx
+secrets.*
+credentials
+credentials.*
+config.local.*
+
+# macOS
+.DS_Store
