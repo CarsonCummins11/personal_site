@@ -44,6 +44,7 @@ with open(os.path.join(_HERE, "editor.js")) as f:
 # Request parsing
 # ---------------------------------------------------------------------------
 
+
 def _parse_multipart(body_bytes: bytes, content_type: str):
     """Parse multipart/form-data. Returns (fields: dict, files: list of (filename, bytes))."""
     raw = b"Content-Type: " + content_type.encode() + b"\r\n\r\n" + body_bytes
@@ -134,14 +135,62 @@ def _handle_load(slug: str) -> dict:
         except Exception:
             images = []
 
-        return _response(200, json.dumps({
-            "title": post_meta.get("title", ""),
-            "date": post_meta.get("published_date", ""),
-            "markdown": markdown,
-            "images": images,
-        }), "application/json")
+        return _response(
+            200,
+            json.dumps(
+                {
+                    "title": post_meta.get("title", ""),
+                    "date": post_meta.get("published_date", ""),
+                    "markdown": markdown,
+                    "images": images,
+                }
+            ),
+            "application/json",
+        )
     except UnknownObjectException:
         return _response(404, f"Post '{slug}' not found")
+    except Exception as e:
+        return _response(500, str(e))
+
+
+# ---------------------------------------------------------------------------
+# POST sub-handlers
+# ---------------------------------------------------------------------------
+
+
+def _handle_upload_image(event: dict) -> dict:
+    """Upload a single image for a given slug. Called before main form submit."""
+    body = event.get("body") or ""
+    if event.get("isBase64Encoded"):
+        body_bytes = base64.b64decode(body)
+    else:
+        body_bytes = body.encode() if isinstance(body, str) else body
+    ct = (event.get("headers") or {}).get("content-type", "")
+    _, files = _parse_multipart(body_bytes, ct)
+    if not files:
+        return _response(400, "no image provided")
+
+    slug = (event.get("queryStringParameters") or {}).get("slug", "").strip()
+    slug = re.sub(r"[^a-z0-9_-]", "_", slug.lower())
+    if not slug:
+        return _response(400, "slug is required")
+
+    filename, img_bytes = files[0]
+    safe_name = re.sub(r"[^a-zA-Z0-9._-]", "_", filename)
+    path = f"docs/blog_posts/{slug}/{safe_name}"
+    try:
+        try:
+            existing = _repo.get_contents(path)
+            _repo.update_file(
+                path, f"update image {safe_name}", img_bytes, existing.sha
+            )
+        except UnknownObjectException:
+            _repo.create_file(path, f"add image {safe_name}", img_bytes)
+        return _response(200, json.dumps({"name": safe_name}), "application/json")
+    except GithubException as e:
+        return _response(
+            502, f"GitHub error {e.status}: {e.data.get('message', str(e))}"
+        )
     except Exception as e:
         return _response(500, str(e))
 
@@ -150,11 +199,11 @@ def _handle_load(slug: str) -> dict:
 # Handler
 # ---------------------------------------------------------------------------
 
+
 def handler(event, context):
-    method = (
-        event.get("httpMethod")
-        or event.get("requestContext", {}).get("http", {}).get("method", "GET")
-    )
+    method = event.get("httpMethod") or event.get("requestContext", {}).get(
+        "http", {}
+    ).get("method", "GET")
 
     if method == "GET":
         path = event.get("rawPath", "/")
@@ -173,7 +222,11 @@ def handler(event, context):
     if method != "POST":
         return _response(405, "Method Not Allowed")
 
-    data, image_files = _parse_body(event)
+    qs = event.get("queryStringParameters") or {}
+    if qs.get("action") == "upload-image":
+        return _handle_upload_image(event)
+
+    data, _ = _parse_body(event)
 
     title = data.get("title", "").strip()
     slug = data.get("slug", "").strip()
@@ -211,23 +264,6 @@ def handler(event, context):
                 meta_file.sha,
             )
 
-            for filename, img_bytes in image_files:
-                safe_name = re.sub(r"[^a-zA-Z0-9._-]", "_", filename)
-                try:
-                    existing = _repo.get_contents(f"docs/blog_posts/{slug}/{safe_name}")
-                    _repo.update_file(
-                        f"docs/blog_posts/{slug}/{safe_name}",
-                        f"update image {safe_name} for: {title}",
-                        img_bytes,
-                        existing.sha,
-                    )
-                except UnknownObjectException:
-                    _repo.create_file(
-                        f"docs/blog_posts/{slug}/{safe_name}",
-                        f"add image {safe_name} for: {title}",
-                        img_bytes,
-                    )
-
             # Update source.md — triggers the render workflow
             _repo.update_file(
                 f"blog_posts/{slug}/source.md",
@@ -236,7 +272,9 @@ def handler(event, context):
                 src_file.sha,
             )
 
-            return _response(200, f'Post "{title}" updated — GitHub Actions will render the HTML.')
+            return _response(
+                200, f'Post "{title}" updated — GitHub Actions will render the HTML.'
+            )
 
         else:
             # ---- Create new post ----
@@ -258,16 +296,6 @@ def handler(event, context):
                 meta_file.sha,
             )
 
-            # Commit image files before source.md so they're present when the
-            # render workflow fires on the source.md push.
-            for filename, img_bytes in image_files:
-                safe_name = re.sub(r"[^a-zA-Z0-9._-]", "_", filename)
-                _repo.create_file(
-                    f"docs/blog_posts/{slug}/{safe_name}",
-                    f"add image {safe_name} for: {title}",
-                    img_bytes,
-                )
-
             # Commit source.md — this push triggers the render workflow.
             _repo.create_file(
                 f"blog_posts/{slug}/source.md",
@@ -275,9 +303,13 @@ def handler(event, context):
                 markdown,
             )
 
-            return _response(200, f'Post "{title}" published — GitHub Actions will render the HTML.')
+            return _response(
+                200, f'Post "{title}" published — GitHub Actions will render the HTML.'
+            )
 
     except GithubException as e:
-        return _response(502, f"GitHub error {e.status}: {e.data.get('message', str(e))}")
+        return _response(
+            502, f"GitHub error {e.status}: {e.data.get('message', str(e))}"
+        )
     except Exception as e:
         return _response(500, str(e))
