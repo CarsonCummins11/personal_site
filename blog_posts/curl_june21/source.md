@@ -1,6 +1,6 @@
 Climber Kyle, a local PNW trail legend, posted about a route called [the CURL](https://climberkyle.com/2019/07/28/commonwealth-ultimate-ridge-linkup-the-curl/) a few years ago, and I've been wanting to do it since. I got up on it on a Monday, and had a mixed bag of an experience. I started up with the fifth class south gulley route on Guye peak, which is never too much fun but not terrible. After this, the hike up to Snoqualmie peak from Guye was straightforward, but a little bit of a sufferfest on a hot day. 
-![Views hiking up Snoqualmie](Screenshot 2026-06-26 at 3.40.56 PM.jpg)
+![Views hiking up Snoqualmie](Screenshot_2026-06-26_at_3.40.56___PM.jpg)
 The ridge going east from Snoqualmie peak was the highlight of the day, interesting 4th and low 5th scrambling on an extremely exposed, clean and solid ridge line. 
-![The ridge you follow away from Snoqualmie](Screenshot 2026-06-26 at 3.40.44 PM.jpg)
+![The ridge you follow away from Snoqualmie](Screenshot_2026-06-26_at_3.40.44___PM.jpg)
 The rest of the route was less fun than I thought it would be. Summiting Lundin peak was okay, large exposure made it interesting. However the remaining Red and Kendall peaks were mostly a choss fest. I would give the route a 5/10 overall. 
-![Exposure on Lundin](Screenshot 2026-06-26 at 3.40.33 PM.jpg)
+![Exposure on Lundin](Screenshot_2026-06-26_at_3.40.33___PM.jpg)

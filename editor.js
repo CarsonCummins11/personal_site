@@ -57,7 +57,7 @@ document.getElementById("add-images-btn").addEventListener("click", () => {
 
 document.getElementById("image-input").addEventListener("change", async (e) => {
   for (const file of e.target.files) {
-    const name = file.name.replace(/\.[^.]+$/, "") + ".jpg";
+    const name = file.name.replace(/\.[^.]+$/, "").replace(/[^a-zA-Z0-9._-]/g, "_") + ".jpg";
     if (imageObjectURLs.has(name)) URL.revokeObjectURL(imageObjectURLs.get(name));
     try {
       const blob = await toJpeg(file);
@@ -65,8 +65,8 @@ document.getElementById("image-input").addEventListener("change", async (e) => {
       imageObjectURLs.set(name, URL.createObjectURL(blob));
     } catch (err) {
       console.error("JPEG conversion failed for", file.name, ":", err);
-      imageFiles.set(file.name, file);
-      imageObjectURLs.set(file.name, URL.createObjectURL(file));
+      imageFiles.set(name, file);
+      imageObjectURLs.set(name, URL.createObjectURL(file));
     }
   }
   renderImageList();

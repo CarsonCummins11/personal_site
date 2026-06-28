@@ -55,17 +55,10 @@ def _parse_multipart(body_bytes: bytes, content_type: str):
     if not isinstance(payload, list):
         return fields, files
     for part in payload:
-        cd = part.get("Content-Disposition", "")
-        name = None
-        filename = None
-        for token in cd.split(";"):
-            token = token.strip()
-            if token.lower().startswith("name="):
-                name = token[5:].strip('"')
-            elif token.lower().startswith("filename="):
-                filename = token[9:].strip('"')
+        name = part.get_param("name", header="content-disposition")
         if not name:
             continue
+        filename = part.get_filename()
         data = part.get_payload(decode=True) or b""
         if filename:
             files.append((filename, data))
@@ -160,25 +153,26 @@ def _handle_load(slug: str) -> dict:
 
 def _handle_upload_image(event: dict) -> dict:
     """Upload a single image for a given slug. Called before main form submit."""
-    body = event.get("body") or ""
-    if event.get("isBase64Encoded"):
-        body_bytes = base64.b64decode(body)
-    else:
-        body_bytes = body.encode() if isinstance(body, str) else body
-    ct = (event.get("headers") or {}).get("content-type", "")
-    _, files = _parse_multipart(body_bytes, ct)
-    if not files:
-        return _response(400, "no image provided")
-
-    slug = (event.get("queryStringParameters") or {}).get("slug", "").strip()
-    slug = re.sub(r"[^a-z0-9_-]", "_", slug.lower())
-    if not slug:
-        return _response(400, "slug is required")
-
-    filename, img_bytes = files[0]
-    safe_name = re.sub(r"[^a-zA-Z0-9._-]", "_", filename)
-    path = f"docs/blog_posts/{slug}/{safe_name}"
     try:
+        body = event.get("body") or ""
+        body_bytes = (
+            base64.b64decode(body)
+            if event.get("isBase64Encoded")
+            else (body.encode() if isinstance(body, str) else body)
+        )
+        ct = (event.get("headers") or {}).get("content-type", "")
+        _, files = _parse_multipart(body_bytes, ct)
+        if not files:
+            return _response(400, "no image provided")
+
+        slug = (event.get("queryStringParameters") or {}).get("slug", "").strip()
+        slug = re.sub(r"[^a-z0-9_-]", "_", slug.lower())
+        if not slug:
+            return _response(400, "slug is required")
+
+        filename, img_bytes = files[0]
+        safe_name = re.sub(r"[^a-zA-Z0-9._-]", "_", filename)
+        path = f"docs/blog_posts/{slug}/{safe_name}"
         try:
             existing = _repo.get_contents(path)
             _repo.update_file(
