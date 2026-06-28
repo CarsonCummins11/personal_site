@@ -1,6 +1,6 @@
 The [Alpine Lakes Home Court 100](https://www.summitpost.org/the-home-court-100/649859) is a somewhat niche peakbagging list for Seattle area summit enthusiasts. There is [an even more niche extension](https://www.peakbagger.com/list.aspx?lid=21307) of it which includes all subsummits which hit the 500 feet of prominence threshold. I spent this past weekend bagging 20 of those niche peaks. 
 
-I got Friday off of work, so I began my hike Thursday after work. After about a 1.5 hour drive from Seattle, I started my way up Little Kachess Beacon trail, a steep and at times loose single track trail leading to an observation tower about halfway along the ridge leading to Little Kachess peak. 
+I didn't have to work on Friday, so I began my hike Thursday after work. After about a 1.5 hour drive from Seattle, I started my way up Little Kachess Beacon trail, a steep and at times loose single track trail leading to an observation tower about halfway along the ridge leading to Little Kachess peak. 
 
 ![Observation tower at Little Kachess Beacon](kachess_ridge_tower.jpeg)
 
