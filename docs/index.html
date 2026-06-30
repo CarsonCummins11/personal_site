@@ -64,11 +64,57 @@
                     </svg>
                 </a>`;
             }
+            const PAGE_SIZE = 10;
+            let allBlogPosts = [];
+            let blogPage = 0;
+            let allTicks = [];
+            let tickPage = 0;
+
+            function renderPaginationHTML(page, total, type) {
+                const totalPages = Math.ceil(total / PAGE_SIZE);
+                if (totalPages <= 1) return "";
+                return `<div class="pagination">
+                    ${page > 0 ? `<button class="page-btn" onclick="changePage('${type}', ${page - 1})">← Prev</button>` : ""}
+                    <span class="page-indicator">${page + 1} / ${totalPages}</span>
+                    ${page < totalPages - 1 ? `<button class="page-btn" onclick="changePage('${type}', ${page + 1})">Next →</button>` : ""}
+                </div>`;
+            }
+
+            function changePage(type, page) {
+                if (type === "blog") {
+                    blogPage = page;
+                    renderBlogPage();
+                } else {
+                    tickPage = page;
+                    renderTicksPage();
+                }
+            }
+
+            function renderBlogPage() {
+                const start = blogPage * PAGE_SIZE;
+                const pageItems = allBlogPosts.slice(start, start + PAGE_SIZE);
+                document.querySelector("#blog-links").innerHTML = pageItems
+                    .map(makeHTMLForBlogLink)
+                    .join("");
+                document.querySelector("#blog-pagination").innerHTML =
+                    renderPaginationHTML(blogPage, allBlogPosts.length, "blog");
+            }
+
+            function renderTicksPage() {
+                const start = tickPage * PAGE_SIZE;
+                const pageItems = allTicks.slice(start, start + PAGE_SIZE);
+                document.querySelector("#tick-list").innerHTML = pageItems
+                    .map(makeHTMLForTick)
+                    .join("");
+                document.querySelector("#tick-pagination").innerHTML =
+                    renderPaginationHTML(tickPage, allTicks.length, "tick");
+            }
+
             async function fetchTicks() {
                 try {
                     const res = await fetch("ticks.json");
                     const rows = await res.json();
-                    const ticks = rows.map((r) => ({
+                    allTicks = rows.map((r) => ({
                         date: r["Date"],
                         name: r["Route"],
                         grade: r["Rating"],
@@ -78,9 +124,7 @@
                         style: r["Style"],
                         leadStyle: r["Lead Style"],
                     }));
-                    document.querySelector("#tick-list").innerHTML = ticks
-                        .map(makeHTMLForTick)
-                        .join("");
+                    renderTicksPage();
                 } catch (e) {
                     document.querySelector("#ticks-section").hidden = true;
                 }
@@ -98,18 +142,14 @@
             }
             document.addEventListener("DOMContentLoaded", function (event) {
                 fetch("blog_metadata.json").then((response) => {
-                    let innerHTML = "";
                     response.json().then((data) => {
-                        data.forEach((post) => {
-                            innerHTML += makeHTMLForBlogLink(post);
-                        });
-                        document.querySelector("#blog-links").innerHTML =
-                            innerHTML;
+                        allBlogPosts = data.slice().reverse();
+                        renderBlogPage();
                     });
                 });
                 fetchTicks();
                 const panel_value =
-                    window.location.hash.substring(1) || "adventure";
+                    window.location.hash.substring(1) || "professional";
                 set_panel(panel_value);
                 var txt = [
                     "I spend too much time on my computer.",
@@ -511,6 +551,33 @@
                 color: orange;
                 transform: translateX(6px);
             }
+            .pagination {
+                display: flex;
+                align-items: center;
+                gap: 1rem;
+                padding: 1.25rem 0 0.5rem;
+            }
+            .page-btn {
+                background: none;
+                border: none;
+                cursor: pointer;
+                font-family: var(--primary-font);
+                font-size: 0.82rem;
+                font-weight: 700;
+                color: #b0b0b0;
+                padding: 0;
+                transition: color 0.2s;
+            }
+            .page-btn:hover {
+                color: orange;
+            }
+            .page-indicator {
+                font-family: var(--primary-font);
+                font-size: 0.75rem;
+                color: #d0d0d0;
+                font-weight: 700;
+                letter-spacing: 0.05em;
+            }
         </style>
     </head>
     <body>
@@ -572,6 +639,7 @@
                     Trip Reports
                 </h1>
                 <div id="blog-links"></div>
+                <div id="blog-pagination"></div>
                 <div id="ticks-section" style="margin-top: 3.5rem">
                     <h2
                         style="
@@ -595,6 +663,7 @@
                         via Mountain Project
                     </p>
                     <div id="tick-list"></div>
+                    <div id="tick-pagination"></div>
                 </div>
             </div>
         </div>
