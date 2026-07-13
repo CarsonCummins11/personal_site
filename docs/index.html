@@ -32,43 +32,9 @@
                     window.location.href.split("#")[0] + "#" + panel_name,
                 );
             }
-            function makeHTMLForTick(tick) {
-                const [y, m, d] = tick.date.split("-").map(Number);
-                const date = new Date(y, m - 1, d).toLocaleDateString("en-US", {
-                    month: "short",
-                    day: "numeric",
-                    year: "numeric",
-                });
-                const pitches = parseInt(tick.pitches) || 1;
-                const pitchLabel =
-                    pitches === 1 ? "1 pitch" : `${pitches} pitches`;
-                const styleLabel = [tick.style, tick.leadStyle]
-                    .filter(Boolean)
-                    .join(" · ");
-                const infoLabel = [pitchLabel, styleLabel]
-                    .filter(Boolean)
-                    .join(" · ");
-                const notes = tick.notes
-                    ? tick.notes.slice(0, 160) +
-                      (tick.notes.length > 160 ? "…" : "")
-                    : "";
-                return `<a class="tick-link" href="${tick.url}" target="_blank" rel="noopener">
-                    <div class="tick-meta">
-                        <span class="tick-date">${date}</span>
-                        <span class="tick-name">${tick.name}${tick.grade ? `<span class="tick-grade">${tick.grade}</span>` : ""}</span>
-                        ${notes ? `<span class="tick-notes">${notes}</span>` : ""}
-                        <span class="tick-info">${infoLabel}</span>
-                    </div>
-                    <svg class="post-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                </a>`;
-            }
             const PAGE_SIZE = 10;
             let allBlogPosts = [];
             let blogPage = 0;
-            let allTicks = [];
-            let tickPage = 0;
 
             function renderPaginationHTML(page, total, type) {
                 const totalPages = Math.ceil(total / PAGE_SIZE);
@@ -84,9 +50,6 @@
                 if (type === "blog") {
                     blogPage = page;
                     renderBlogPage();
-                } else {
-                    tickPage = page;
-                    renderTicksPage();
                 }
             }
 
@@ -100,35 +63,6 @@
                     renderPaginationHTML(blogPage, allBlogPosts.length, "blog");
             }
 
-            function renderTicksPage() {
-                const start = tickPage * PAGE_SIZE;
-                const pageItems = allTicks.slice(start, start + PAGE_SIZE);
-                document.querySelector("#tick-list").innerHTML = pageItems
-                    .map(makeHTMLForTick)
-                    .join("");
-                document.querySelector("#tick-pagination").innerHTML =
-                    renderPaginationHTML(tickPage, allTicks.length, "tick");
-            }
-
-            async function fetchTicks() {
-                try {
-                    const res = await fetch("ticks.json");
-                    const rows = await res.json();
-                    allTicks = rows.map((r) => ({
-                        date: r["Date"],
-                        name: r["Route"],
-                        grade: r["Rating"],
-                        notes: r["Notes"],
-                        url: r["URL"],
-                        pitches: r["Pitches"],
-                        style: r["Style"],
-                        leadStyle: r["Lead Style"],
-                    }));
-                    renderTicksPage();
-                } catch (e) {
-                    document.querySelector("#ticks-section").hidden = true;
-                }
-            }
             function makeHTMLForBlogLink(info) {
                 return `<a class="blog-post-link" href="blog_posts/${info.folder}/post.html">
                     <div class="post-meta">
@@ -147,7 +81,6 @@
                         renderBlogPage();
                     });
                 });
-                fetchTicks();
                 const panel_value =
                     window.location.hash.substring(1) || "professional";
                 set_panel(panel_value);
@@ -480,77 +413,6 @@
                 color: orange;
                 transform: translateX(6px);
             }
-            .tick-link {
-                text-decoration: none;
-                display: flex;
-                align-items: center;
-                justify-content: space-between;
-                padding: 1.1rem 0;
-                border-bottom: 1px solid #f0f0f0;
-                color: #1a1a1a;
-                gap: 1rem;
-                transition: 0.25s;
-            }
-            .tick-link:first-child {
-                border-top: 1px solid #f0f0f0;
-            }
-            .tick-link:hover {
-                padding-left: 14px;
-                border-bottom-color: orange;
-            }
-            .tick-link .tick-meta {
-                display: flex;
-                flex-direction: column;
-                gap: 0.2rem;
-            }
-            .tick-link .tick-date {
-                font-family: var(--primary-font);
-                font-size: 0.72rem;
-                color: #b0b0b0;
-                font-weight: 700;
-                letter-spacing: 0.06em;
-                text-transform: uppercase;
-            }
-            .tick-link .tick-name {
-                font-family: var(--primary-font);
-                font-size: 1.05rem;
-                font-weight: 700;
-                color: #1a1a1a;
-                display: flex;
-                align-items: baseline;
-                gap: 0.5rem;
-            }
-            .tick-link .tick-grade {
-                font-size: 0.8rem;
-                font-weight: 600;
-                color: #b0b0b0;
-            }
-            .tick-link .tick-notes {
-                font-family: var(--secondary-font);
-                font-size: 0.82rem;
-                color: #777;
-                line-height: 1.55;
-                font-style: italic;
-                margin-top: 0.2rem;
-            }
-            .tick-link .tick-info {
-                font-family: var(--primary-font);
-                font-size: 0.72rem;
-                color: #b0b0b0;
-                font-weight: 700;
-                letter-spacing: 0.04em;
-                text-transform: uppercase;
-                margin-top: 0.4rem;
-            }
-            .tick-link .post-arrow {
-                color: #d0d0d0;
-                transition: 0.25s;
-                flex-shrink: 0;
-            }
-            .tick-link:hover .post-arrow {
-                color: orange;
-                transform: translateX(6px);
-            }
             .pagination {
                 display: flex;
                 align-items: center;
@@ -640,31 +502,6 @@
                 </h1>
                 <div id="blog-links"></div>
                 <div id="blog-pagination"></div>
-                <div id="ticks-section" style="margin-top: 3.5rem">
-                    <h2
-                        style="
-                            font-family: var(--primary-font);
-                            font-weight: 800;
-                            font-size: 1.4rem;
-                            margin: 0 0 0.2rem;
-                            color: #1a1a1a;
-                        "
-                    >
-                        Recent climbs
-                    </h2>
-                    <p
-                        style="
-                            font-family: var(--secondary-font);
-                            color: #b0b0b0;
-                            font-size: 0.85rem;
-                            margin: 0 0 1.5rem;
-                        "
-                    >
-                        via Mountain Project
-                    </p>
-                    <div id="tick-list"></div>
-                    <div id="tick-pagination"></div>
-                </div>
             </div>
         </div>
         <div id="professional-div">

@@ -1,41 +1,7 @@
-import csv
-import io
 import json
 import os
 import sys
-import urllib.request
 from datetime import datetime
-
-try:
-    with urllib.request.urlopen(
-        "https://www.mountainproject.com/user/201537333/carson-cummins/tick-export"
-    ) as resp:
-        ticks = list(csv.DictReader(io.StringIO(resp.read().decode("utf-8"))))
-
-    # Deduplicate: two ticks are the same only when they share the same route,
-    # date, non-empty description, and style. Different descriptions, dates, or
-    # styles mean distinct ticks (e.g. TR then lead on the same day).
-    seen: set = set()
-    deduped: list = []
-    for tick in ticks:
-        notes = tick.get("Notes", "").strip()
-        if notes:
-            key = (tick["URL"], tick["Date"], notes, tick.get("Style", ""))
-        else:
-            key = id(tick)  # empty-description ticks are never merged
-        if key not in seen:
-            seen.add(key)
-            deduped.append(dict(tick))
-
-    if len(deduped) < len(ticks):
-        print(f"Deduplicated {len(ticks) - len(deduped)} duplicate tick(s)")
-    ticks = deduped
-
-    with open("docs/ticks.json", "w") as f:
-        json.dump(ticks, f)
-    print(f"Fetched {len(ticks)} ticks")
-except Exception as e:
-    print(f"Could not fetch ticks: {e}")
 
 with open("docs/blog_metadata.json") as f:
     blog_metadata = json.load(f)

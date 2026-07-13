@@ -26,6 +26,6 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add docs/blog_posts/ docs/blog_metadata.json docs/ticks.json
+          git add docs/blog_posts/ docs/blog_metadata.json
           git diff --cached --quiet || git commit -m "render blog posts [skip ci]"
           git push
