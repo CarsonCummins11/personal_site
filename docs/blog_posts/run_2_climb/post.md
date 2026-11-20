@@ -6,6 +6,6 @@ We simuled the route in 2 blocks because we underbrought micros, a part of the s
 
 The day after Poppy's, Friday, we did a route called Ice Cold Zach Daniels on the North Face of Silver star. It was a super relaxed day, but the climbing was amazing, and in an amazing setting. 
 
-![Staring down the north face of Silver peak. ](zach_daniels.png)
+![Staring down the north face of Silver peak. ](zach_daniels.jpeg)
 
 As a hike, the route was amazing. Taking your non-climber friends down this by just doing the loop in reverse and rapping would be fun. The climb itself was fun, but over too soon. Basically one pitch + faff.

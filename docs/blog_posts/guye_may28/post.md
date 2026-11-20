@@ -6,10 +6,10 @@ Bushwacking from the creek crossing to the start of south gulley was a little an
 
 Alternating between 3rd/4th class rock and veggie belays, sticking as left as possible makes for more engaging travel. As you get higher the climbing gets more fun.
 
-![Climbing on Guye](climbing.png)
+![Climbing on Guye](climbing.jpeg)
 
 Top out onto a ridge, which includes a few towers that are interesting to climb up and over. Don't be intimidated by the final tower's steep overhanging roof, it's breached easily by traversing rightwards across the low fifth slab below and making a few 5.6 jug moves upwards. 
 
-![Start of the ridge traverse](ridge_summit.png)
+![Start of the ridge traverse](ridge_summit.jpeg)
 
 Take in some great views of the surrounding peaks, and take the trail back to the cave ridge trail intersection. A left turn here takes you to the snow lakes trailhead via steep, somewhat loose dirt single track, and a right turn takes you back to the PCT parking lot.
