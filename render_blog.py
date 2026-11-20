@@ -99,6 +99,16 @@ def normalize_images(folder):
             f.write(source)
 
 
+def prompt_date(folder):
+    """Ask for the post date (MM/DD/YYYY) until a valid one is entered."""
+    while True:
+        raw = input(f"Post date for folder: {folder} (MM/DD/YYYY):   ").strip()
+        try:
+            return datetime.strptime(raw, "%m/%d/%Y").strftime("%m/%d/%Y")
+        except ValueError:
+            print("  not a valid date, try again (e.g. 07/11/2026)")
+
+
 with open("docs/blog_metadata.json") as f:
     blog_metadata = json.load(f)
 blog_folders = sorted(
@@ -119,7 +129,7 @@ for post in blog_metadata:
 for folder in blog_folders:
     if folder not in folder_to_titles:
         title = input(f"Post title for folder: {folder}:   ")
-        date = datetime.now().strftime("%m/%d/%Y")
+        date = prompt_date(folder)
         revised_blog_metadata.append(
             {
                 "title": title,
